@@ -266,7 +266,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname; fmin = 0.05, fmax = 0.75, 
 
   posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory, sname), sname, save = save)
 
-  return Results(abcsetup, abcres, VAF, posteriors, DFmp)
+  return Results(abcsetup, abcres, VAF, posteriors, DFmp, sname)
 end
 
 function fitABCmodels(data::String, sname; fmin = 0.05, fmax = 0.75, detectionlimit = fmin, read_depth = 200.0, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6)

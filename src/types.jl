@@ -10,4 +10,5 @@ type Results
   VAF::Array{Float64, 1}
   Posterior::Array{Posterior, 1}
   ModelProb::DataFrame
+  Sname::String
 end

@@ -1,5 +1,6 @@
-function plothistogram(res, model = 1)
+function plothistogram(res, model = 0)
 
+  model = model + 1
   DFres = res.Posterior[model].MeanHistogram
   DFres[:VAF] = collect(0.01:0.01:1.0)
   DF = DataFrame(VAF = res.VAF)
@@ -30,6 +31,8 @@ function plotmodelposterior(res)
 end
 
 function plotparameterposterior(res, model = 1)
+
+    model = model + 1
 
     DF = stack(res.Posterior[model].Parameters)
     plot(DF, x=:value, xgroup=:variable,

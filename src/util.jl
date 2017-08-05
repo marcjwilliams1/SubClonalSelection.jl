@@ -210,6 +210,12 @@ function averagehistogram(particles, model)
     return DFr
 end
 
+function saveresults(res::Results; resultsdirectory = "output")
+
+  makedirectories(joinpath(resultsdirectory, sname))
+  getresults(res.ABCresults, resultsdirectory, sname, save = true)
+  return
+end
 
 function getresults(abcres, resultsdirectory, sname; save = false)
 
@@ -227,7 +233,7 @@ function getresults(abcres, resultsdirectory, sname; save = false)
     end
     push!(posteriors, Posterior(DFr, DFpost0, abcres.modelprob[1]))
   else
-    push!(posteriors, Posterior(DFr, DFpost0, abcres.modelprob[1]))
+    push!(posteriors, Posterior(DataFrame(), DataFrame(), abcres.modelprob[1]))
   end
 
   if abcres.modelprob[2] > 0.0
