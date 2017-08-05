@@ -212,7 +212,29 @@ priorselection2 = Prior([Uniform(priormu...),
   return setup
 end
 
-function fitABCmodels(data::Array{Float64, 1}, sname; read_depth = 200.0, detectionlimit = 5/read_depth, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6)
+"""
+    fitABCmodels(data::Array{Float64, 1}, sname::String; <keyword arguments>)
+    
+Fit a stochastic model of cancer evolution to cancer sequencing data using Approximate Bayesian computation and infer the number of subclones (up to 2) and relative fitness of subclones.s
+...
+## Arguments
+- `read_depth = 200.0`: Mean read depth of the target data set
+- `detectionlimit = 5/read_depth`: Minimum VAF required to identify mutations
+- `fmin = 0.01`: Minimum range of VAF to perform inference
+- `fmax = 0.75`: Maximum range of VAF to perform inference
+- `maxiterations = 10^4 `: Maximum number of iterations before ABC terminates
+- `maxclones = 2`: Maximum number of clones, can be 1 or 2
+- `nparticles = 500`: Number of particles (ie samples) in the ABC output
+- `Nmax = 10^4`: Maximum population size used to fit data, increase if suspect that there is a late arising clone
+- `resultsdirectory = "output" `: Directory where posterior distributions will be saved to
+- `progress = true`: Show progress of ABC sampler with `ProgressMeter` package
+- `verbose = true`: Print out summary at each ABC population step.
+- `save = false `: Save output or not
+- `inferdetection = false `: Do a first past to infer cellularity to modify sequencing depth and detection limit
+- `ϵ1 = 10^6 `: Target ϵ for first ABC step, if you find the model with 2 clones often dies out, increase this.
+...
+"""
+function fitABCmodels(data::Array{Float64, 1}, sname; read_depth = 200.0, detectionlimit = 5/read_depth, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6)
 
   #make output directories
   if save != false

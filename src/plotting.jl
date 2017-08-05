@@ -53,9 +53,9 @@ function saveallplots(res; resultsdirectory = "output")
   model = 0
   for post in res.Posterior
     if post.Probability > 0.0
-      p = plothistogram(res, model + 1)
+      p = plothistogram(res, model)
       draw(PNG(joinpath(resultsdirectory, "plots", "histogram-$(model)clone.png"), 4inch, 3inch), p)
-      p = plotparameterposterior(res, model + 1)
+      p = plotparameterposterior(res, model)
       draw(PNG(joinpath(resultsdirectory, "plots", "posterior-$(model)clone.png"), 15inch, 6inch), p)
     end
     model = model + 1
