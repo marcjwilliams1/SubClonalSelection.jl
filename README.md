@@ -11,10 +11,17 @@ Running an analysis requires variant allele frequencies (VAFs) as measured in de
 ## Running an analysis
 The main function to perform an analysis is ```fitABCmodels```. This takes as its first argument either a vector of Floats or a string pointing to a text file with a vector of floats, which will be read in automatically. The second argument is the name of the sample you wish to analyse which will be used to write the data and plots to a file. There are then a number of keyword arguments set to reasonable defaults. More details of these arguments and their defaults can be found by typing ```?fitABCmodels``` in a Julia session.
 
-There is some example data generated from the simulation found in the examples directory. For example the following command will run the inference on the ```oneclone.txt``` data set with 200 posterior samples given sequencing depth of sample is 150X, and then save the output to the example directory:
+There is some example data generated from the simulation found in the examples directory. For example the following command will run the inference on the ```oneclone.txt``` data set with 200 posterior samples and 10^5 iterations given sequencing depth of sample is 150X:
 ```
-out = fitABCmodels("example/oneclone.txt", "oneclone", read_depth = 150, save = true, resultsdirectory = "example", nparticles = 200)
+out = fitABCmodels("example/oneclone.txt",
+  "oneclone",
+  read_depth = 150,
+  resultsdirectory = "example",
+  nparticles = 200,
+  maxiterations = 10^5)
 ```
+The above command should run in about 15 minutes on reasonably specced computer. For robust inferences we would recommend using 500 particles and setting ```maxiterations``` to 10^6. This starts to get computationally expensive so running on a cluster is recommended.
+
 Also included are a number of functions to summarize the output and plot the posterior. ```show(out)``` will print a summary of the posterior model and parameter probabilities. We can also plot the posterior distributions.
 
 Plot the posterior model probabilities.
@@ -41,3 +48,6 @@ Finally we can also save all plots and text files with posterior distributions t
 saveresults(out; resultsdirectory = "example")
 saveallplots(out, resultsdirectory = "example")
 ```
+
+### Additional info
+The inference assumes mutations with a VAF of 5/read_depth is detectable. In some cases this may not be accurate. In particular if the cellularity is low this will have an effect on the ability to resolve low VAF mutations. For this purpose there is an optional argument ```inferdetection``` which if set to ```true``` will run a first pass on the data attempting to fit the tumour cellularity and then will attempt to correct the input depth and detection limit accordingly. The detection limit can also be inputted manually with eg ```detection_limit = 0.03```.
