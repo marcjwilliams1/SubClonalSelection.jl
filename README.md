@@ -18,7 +18,7 @@ out = fitABCmodels("example/oneclone.txt",
   read_depth = 150,
   resultsdirectory = "example",
   nparticles = 200,
-  maxiterations = 5*10^4)
+  maxiterations = 5*10^4);
 ```
 The above command should run in about 15 minutes on a reasonably specced computer. For robust inferences we would recommend using 500 particles and setting ```maxiterations``` to 10^6. This starts to get computationally expensive so running on a cluster would be recommended in most cases.
 

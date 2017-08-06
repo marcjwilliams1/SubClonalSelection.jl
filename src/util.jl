@@ -307,6 +307,12 @@ function makeplotsdirectories(resultsdirectory)
   end
 end
 
+function makedirectory(resultsdirectory)
+  if isdir(joinpath(resultsdirectory)) == false
+    mkdir(joinpath(resultsdirectory))
+  end
+end
+
 function show(res::Results)
 
   show(res.ABCresults)

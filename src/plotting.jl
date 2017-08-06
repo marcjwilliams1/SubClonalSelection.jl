@@ -47,6 +47,7 @@ end
 function saveallplots(res; resultsdirectory = "output")
 
   dir = joinpath(resultsdirectory, res.SampleName)
+  makedirectory(resultsdirectory)
   makeplotsdirectories(dir)
   p = plotmodelposterior(res)
   draw(PNG(joinpath(dir, "plots", "modelposterior.png"), 4inch, 3inch), p)
