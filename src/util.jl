@@ -72,9 +72,12 @@ function collectoutput2clone(abcres; Nmax = 10^10)
     s1, s2 = swapvalues(s1, s2, indeces)
     t1, t2 = swapvalues(t1, t2, indeces)
 
+    #hack so that nested clones don't cause errors
+    freqfactor = map((x,y) -> maximum([x, y]), 1 - scfreq1 - scfreq2, ones(length(scfreq1))*0.01)
+
     t1a = (scmuts1 ./ mu)
     t1b = (scmuts2 ./ mu)
-    tend = (log(Nmax .* (1 - scfreq1 - scfreq2)) / log(2)) + eulergamma/log(2)
+    tend = (log(Nmax .* (freqfactor)) / log(2)) + eulergamma/log(2)
     s1 = selection2clone(log(2), scfreq1, scfreq2, tend, t1a)
     s2 = selection2clone(log(2), scfreq2, scfreq1, tend, t1b)
 
