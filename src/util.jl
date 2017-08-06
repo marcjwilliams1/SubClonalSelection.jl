@@ -1,19 +1,37 @@
 Mcdf(f,fmin,fmax) = (1.0./f - 1.0/fmax) ./ (1.0/fmin - 1.0/fmax)
 
+function selection(λ, f, tend, t1)
+    #define the equation for selection as above
+    s = (λ .* t1 + log(f ./ (1 - f))) ./ (λ .* (tend - t1))
 
-function collectoutput1clone(abcres)
+    return s
+end
+
+function selection2clone(λ, f1, f2, tend, t1)
+    #define the equation for selection as above
+    s = (λ .* t1 + log(f1 ./ (1 - f1 - f2))) ./ (λ .* (tend - t1))
+
+    return s
+end
+
+function collectoutput1clone(abcres; Nmax = 10^10)
 
     scmuts = map(x -> x.other[2], abcres.particles)
     scdivs = map(x -> x.other[3], abcres.particles)
     scfreq = map(x -> x.other[4], abcres.particles)
+    mu = abcres.parameters[:, 1]
 
-    DF = DataFrame(mu = abcres.parameters[:, 1],
+    t1 = (scmuts ./ mu)
+    tend = (log(Nmax .* (1 - scfreq)) / log(2)) + eulergamma/log(2)
+    s = selection(log(2), scfreq, tend, t1)
+
+    DF = DataFrame(mu = mu,
     clonalmutations = abcres.parameters[:, 2],
-    s = abcres.parameters[:, 3],
-    t = abcres.parameters[:, 4],
+    s = s,
+    t = t1,
     cellularity = abcres.parameters[:, 5],
     freq = scfreq,
-    scmuts = map(x -> Float64(x), scmuts))
+    scmuts = scmuts)
 
     return DF
 end
@@ -28,7 +46,7 @@ function swapvalues(x1, x2, indeces)
   return x1, x2
 end
 
-function collectoutput2clone(abcres)
+function collectoutput2clone(abcres; Nmax = 10^10)
 
     scmuts1 = map(x -> x.other[2], abcres.particles)
     scmuts2 = map(x -> x.other[3], abcres.particles)
@@ -36,6 +54,7 @@ function collectoutput2clone(abcres)
     scdivs2 = map(x -> x.other[5], abcres.particles)
     scfreq1 = map(x -> x.other[6], abcres.particles)
     scfreq2 = map(x -> x.other[7], abcres.particles)
+    mu = abcres.parameters[:, 1]
 
     s1 = abcres.parameters[:, 3]
     t1 = abcres.parameters[:, 4]
@@ -53,12 +72,18 @@ function collectoutput2clone(abcres)
     s1, s2 = swapvalues(s1, s2, indeces)
     t1, t2 = swapvalues(t1, t2, indeces)
 
+    t1a = (scmuts1 ./ mu)
+    t1b = (scmuts2 ./ mu)
+    tend = (log(Nmax .* (1 - scfreq1 - scfreq2)) / log(2)) + eulergamma/log(2)
+    s1 = selection2clone(log(2), scfreq1, scfreq2, tend, t1a)
+    s2 = selection2clone(log(2), scfreq2, scfreq1, tend, t1b)
+
     DF = DataFrame(mu = abcres.parameters[:, 1],
     clonalmutations = abcres.parameters[:, 2],
     s1 = s1,
-    t1 = t1,
+    t1 = t1a,
     s2 = s2,
-    t2 = t2,
+    t2 = t1b,
     cellularity = abcres.parameters[:, 7],
     freq1 = scfreq1,
     freq2 = scfreq2,
