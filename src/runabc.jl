@@ -134,7 +134,7 @@ function tumourABCselection2(parameters, constants, targetdata)
     euclidean(AD.DF[:cumsum], targetdata[:cumsum]), out, c
 end
 
-function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.5, scalefactor = 4, ϵ1 = 10^6)
+function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.5, scalefactor = 4, ϵ1 = 10^6, mincellularity = 0.1)
 
   #function to define priors, constants and create ABCSMC model type
 
@@ -151,7 +151,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
   #priors
   priormu = [0.01, 200.0]
   priorcm = [0.0, 5000.0]
-  priorcellularity = [0.1, 1.0]
+  priorcellularity = [mincellularity, 1.0]
 
   #need to create Prior type which has a distribution type array with a corresponding distribution specific parameter array
   priorneutral = Prior([Uniform(priormu...),
@@ -234,7 +234,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `ϵ1 = 10^6 `: Target ϵ for first ABC step, if you find the model with 2 clones often dies out, increase this.
 ...
 """
-function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6)
+function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1)
 
   #make output directories
   if save != false
@@ -258,7 +258,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     nparticles = 100,
     modelkern = 0.5,
     scalefactor = 4,
-    Nmax = Nmax
+    Nmax = Nmax,
+    mincellularity = mincellularity
     )
     abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
     DFpost0 = collectoutput0clone(getmodel(abcres, 1))
@@ -281,7 +282,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
   scalefactor = 4,
   convergence = 0.05,
   ϵ1 = eps1,
-  Nmax = Nmax
+  Nmax = Nmax,
+  mincellularity = mincellularity
   )
   abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
 
@@ -297,9 +299,9 @@ end
 
 If data is a string will read in file. File should be a 1 column text file with VAF values in the rows.
 """
-function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6)
+function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1)
 
   VAF = readdlm(data)[:, 1]
 
-  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, inferdetection = inferdetection, ϵ1 = ϵ1)
+  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, inferdetection = inferdetection, ϵ1 = ϵ1, mincellularity = mincellularity)
 end
