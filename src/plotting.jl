@@ -36,9 +36,9 @@ function plotparameterposterior(res, model = 1)
 
     DF = stack(res.Posterior[model].Parameters)
     plot(DF, x=:value, xgroup=:variable,
-    Geom.subplot_grid(Geom.histogram(bincount = 50), free_x_axis=true),
+    Geom.subplot_grid(Geom.histogram(bincount = 30), free_x_axis=true),
     Theme(
-    default_color = RGBA(0.5, 0.5, 0.5, 0.8),
+    default_color = RGBA(0.5, 0.5, 0.5, 0.9),
     major_label_font_size = 12pt,
     minor_label_font_size = 8pt))
 
