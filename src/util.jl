@@ -166,7 +166,11 @@ function averagehistogram(particles)
     return DFr
 end
 
-function averagehistogram(particles, model)
+function averagehistogram(particles, model, VAF)
+
+    x = 0.005:0.01:1.005
+    y = fit(Histogram, VAF, x, closed=:right)
+    DFhist = DataFrame(VAF = x[1:end-1], freq = y.weights)
 
     particles = particles[map(x -> x.model, particles).==model]
     N = length(particles)
@@ -205,7 +209,9 @@ function averagehistogram(particles, model)
                     upperq = uquant,
                     lowerquartile = lquart,
                     upperquartile = uquart,
-                    sd = sd)
+                    sd = sd,
+                    VAF = DFhist[:VAF],
+                    truecounts = DFhist[:freq])
 
     return DFr
 end
@@ -217,7 +223,7 @@ function saveresults(res::Results; resultsdirectory = "output")
   return
 end
 
-function getresults(abcres, resultsdirectory, sname; save = false)
+function getresults(abcres, resultsdirectory, sname, VAF; save = false)
 
   posteriors = Posterior[]
 
@@ -226,7 +232,7 @@ function getresults(abcres, resultsdirectory, sname; save = false)
 
   if abcres.modelprob[1] > 0.0
     DFpost0 = collectoutput0clone(getmodel(abcres, 1))
-    DFr = averagehistogram(abcres.particles, 1)
+    DFr = averagehistogram(abcres.particles, 1, VAF)
     if save == true
       writetable(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone0.csv"), DFpost0)
       writetable(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone0.csv"), DFr)
@@ -238,7 +244,7 @@ function getresults(abcres, resultsdirectory, sname; save = false)
 
   if abcres.modelprob[2] > 0.0
     DFpost1 = collectoutput1clone(getmodel(abcres, 2))
-    DFr = averagehistogram(abcres.particles, 2)
+    DFr = averagehistogram(abcres.particles, 2, VAF)
     if save == true
       writetable(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone1.csv"), DFr)
       writetable(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone1.csv"), DFpost1)
@@ -250,7 +256,7 @@ function getresults(abcres, resultsdirectory, sname; save = false)
 
   if (length(abcres.modelprob) > 2) & (abcres.modelprob[3] > 0.0)
     DFpost2 = collectoutput2clone(getmodel(abcres, 3))
-    DFr = averagehistogram(abcres.particles, 3)
+    DFr = averagehistogram(abcres.particles, 3, VAF)
     if save == true
       writetable(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone2.csv"), DFpost2)
       writetable(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone2.csv"), DFr)

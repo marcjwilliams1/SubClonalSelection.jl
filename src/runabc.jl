@@ -287,7 +287,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
 
   show(abcres)
 
-  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory, sname), sname, save = save)
+  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory, sname), sname, VAF, save = save)
 
   return Results(abcsetup, abcres, VAF, posteriors, DFmp, sname)
 end

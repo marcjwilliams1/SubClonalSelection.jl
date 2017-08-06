@@ -8,7 +8,7 @@ function plothistogram(res, model = 0)
   l1 = layer(DFres, x = :VAF, y = :mean, ymin = :lowerq, ymax = :upperq, Geom.line, Geom.ribbon,
   Theme(default_color = RGBA(0.75, 0.3, 0.3),
   lowlight_color=c->RGBA{Float32}(c.r, c.g, c.b, 0.5)))
-  l2 = layer(DF, x = :VAF, Geom.histogram(bincount=100),
+  l2 = layer(DFres, x = :VAF, y = :truecounts, Geom.bar,
   Theme(default_color = RGBA(0.5, 0.5, 0.5, 0.8),
   major_label_font_size = 16pt,
   minor_label_font_size = 12pt))
@@ -46,17 +46,18 @@ end
 
 function saveallplots(res; resultsdirectory = "output")
 
-  makeplotsdirectories(resultsdirectory)
+  dir = joinpath(resultsdirectory, res.SampleName)
+  makeplotsdirectories(dir)
   p = plotmodelposterior(res)
-  draw(PNG(joinpath(resultsdirectory, "plots", "modelposterior.png"), 4inch, 3inch), p)
+  draw(PNG(joinpath(dir, "plots", "modelposterior.png"), 4inch, 3inch), p)
 
   model = 0
   for post in res.Posterior
     if post.Probability > 0.0
       p = plothistogram(res, model)
-      draw(PNG(joinpath(resultsdirectory, "plots", "histogram-$(model)clone.png"), 4inch, 3inch), p)
+      draw(PNG(joinpath(dir, "plots", "histogram-$(model)clone.png"), 4inch, 3inch), p)
       p = plotparameterposterior(res, model)
-      draw(PNG(joinpath(resultsdirectory, "plots", "posterior-$(model)clone.png"), 15inch, 6inch), p)
+      draw(PNG(joinpath(dir, "plots", "posterior-$(model)clone.png"), 15inch, 6inch), p)
     end
     model = model + 1
   end

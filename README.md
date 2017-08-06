@@ -11,16 +11,16 @@ Running an analysis requires variant allele frequencies (VAFs) as measured in de
 ## Running an analysis
 The main function to perform an analysis is ```fitABCmodels```. This takes as its first argument either a vector of Floats or a string pointing to a text file with a vector of floats, which will be read in automatically. The second argument is the name of the sample you wish to analyse which will be used to write the data and plots to a file. There are then a number of keyword arguments set to reasonable defaults. More details of these arguments and their defaults can be found by typing ```?fitABCmodels``` in a Julia session.
 
-There is some example data generated from the simulation found in the examples directory. For example the following command will run the inference on the ```oneclone.txt``` data set with 200 posterior samples and 10^5 iterations given sequencing depth of sample is 150X:
+There is some example data generated from the simulation found in the examples directory. For example the following command will run the inference on the ```oneclone.txt``` data set with 200 posterior samples and 5*10^4 iterations given sequencing depth of sample is 150X:
 ```
 out = fitABCmodels("example/oneclone.txt",
   "oneclone",
   read_depth = 150,
   resultsdirectory = "example",
   nparticles = 200,
-  maxiterations = 10^5)
+  maxiterations = 5*10^4)
 ```
-The above command should run in about 15 minutes on reasonably specced computer. For robust inferences we would recommend using 500 particles and setting ```maxiterations``` to 10^6. This starts to get computationally expensive so running on a cluster is recommended.
+The above command should run in about 15 minutes on a reasonably specced computer. For robust inferences we would recommend using 500 particles and setting ```maxiterations``` to 10^6. This starts to get computationally expensive so running on a cluster would be recommended in most cases.
 
 Also included are a number of functions to summarize the output and plot the posterior. ```show(out)``` will print a summary of the posterior model and parameter probabilities. We can also plot the posterior distributions.
 
@@ -41,6 +41,16 @@ Plot the posterior parameter distribution for model 2.
 plothistogram(out, 1)
 ```
 ![plot](/example/plots/posterior-1clone.png)
+
+Note the ground truth of the parameters are:
+```
+  mu = 20.0
+  clonalmutations = 200
+  t = 7.3
+  cellularity = 0.8
+  freq = 0.59
+  scmuts = 180
+```
 
 Finally we can also save all plots and text files with posterior distributions to a directory, unless specified the default will be to create a file a directory called ```output``` in the current working directory.
 
