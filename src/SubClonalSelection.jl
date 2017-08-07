@@ -7,8 +7,8 @@ using ApproxBayes
 using Distributions
 using Distances
 using GLM
-using Gadfly
-using Colors
+#using Gadfly
+#using Colors
 
 import Base.show
 
@@ -18,17 +18,18 @@ export
 
 
   #functions
-  fitABCmodels,
-  plothistogram,
-  plotmodelposterior,
-  plotparameterposterior,
-  saveallplots,
+  fitABCmodels#,
   timefunc,
   timefuncrand
+  #plothistogram,
+  #saveallplots
+  #plotmodelposterior,
+  #plotparameterposterior,
+  #saveallplots
 
 include("types.jl")
 include("runabc.jl")
 include("util.jl")
-include("plotting.jl")
+#include("plotting.jl")
 
 end # module
