@@ -46,19 +46,20 @@ end
 
 function saveallplots(res; resultsdirectory = "output")
 
+  sname = res.SampleName
   dir = joinpath(resultsdirectory, res.SampleName)
   makedirectory(resultsdirectory)
   makeplotsdirectories(dir)
   p = plotmodelposterior(res)
-  draw(PNG(joinpath(dir, "plots", "modelposterior.png"), 4inch, 3inch), p)
+  draw(PNG(joinpath(dir, "plots", "$(sname)-modelposterior.png"), 4inch, 3inch), p)
 
   model = 0
   for post in res.Posterior
     if post.Probability > 0.0
       p = plothistogram(res, model)
-      draw(PNG(joinpath(dir, "plots", "histogram-$(model)clone.png"), 4inch, 3inch), p)
+      draw(PNG(joinpath(dir, "plots", "$(sname)-histogram-$(model)clone.png"), 4inch, 3inch), p)
       p = plotparameterposterior(res, model)
-      draw(PNG(joinpath(dir, "plots", "posterior-$(model)clone.png"), 15inch, 6inch), p)
+      draw(PNG(joinpath(dir, "plots", "$(sname)-posterior-$(model)clone.png"), 15inch, 6inch), p)
     end
     model = model + 1
   end

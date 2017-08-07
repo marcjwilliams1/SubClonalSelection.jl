@@ -234,7 +234,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `ϵ1 = 10^6 `: Target ϵ for first ABC step, if you find the model with 2 clones often dies out, increase this.
 ...
 """
-function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1)
+function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true)
 
   #make output directories
   if save != false
@@ -274,13 +274,31 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     eps1 = abcres.ϵ[end]
   end
 
+  if first == true
+    println("################################################")
+    println("Running first pass to get starting point for ABC")
+    println("################################################")
+    abcsetup = getsetup(1, detectionlimit = detectionlimit,
+    read_depth = read_depth,
+    maxiterations = 10^3,
+    nparticles = 100,
+    modelkern = 0.5,
+    scalefactor = 4,
+    Nmax = Nmax,
+    mincellularity = mincellularity
+    )
+    abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
+    eps1 = abcres.ϵ[end]
+  end
+
+
   abcsetup = getsetup(maxclones, detectionlimit = dl,
   read_depth = read_depth,
   maxiterations = maxiterations,
   nparticles = nparticles,
   modelkern = 0.5,
   scalefactor = 4,
-  convergence = 0.05,
+  convergence = 0.08,
   ϵ1 = eps1,
   Nmax = Nmax,
   mincellularity = mincellularity
