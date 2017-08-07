@@ -31,7 +31,7 @@ function collectoutput1clone(abcres; Nmax = 10^10)
     t = t1,
     cellularity = abcres.parameters[:, 5],
     freq = scfreq,
-    scmuts = scmuts)
+    scmuts = map(x -> Float64(x), scmuts))
 
     return DF
 end
@@ -251,7 +251,7 @@ function saveresults(res::Results; resultsdirectory = "output")
   return
 end
 
-function getresults(abcres, resultsdirectory, sname, VAF; save = false)
+function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf = 10^10)
 
   posteriors = Posterior[]
 
@@ -271,7 +271,7 @@ function getresults(abcres, resultsdirectory, sname, VAF; save = false)
   end
 
   if abcres.modelprob[2] > 0.0
-    DFpost1 = collectoutput1clone(getmodel(abcres, 2))
+    DFpost1 = collectoutput1clone(getmodel(abcres, 2), Nmax = Nmaxinf)
     DFr = averagehistogram(abcres.particles, 2, VAF)
     if save == true
       writetable(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone1.csv"), DFr)
@@ -282,8 +282,8 @@ function getresults(abcres, resultsdirectory, sname, VAF; save = false)
     push!(posteriors, Posterior(DataFrame(), DataFrame(), abcres.modelprob[2]))
   end
 
-  if (length(abcres.modelprob) > 2) & (abcres.modelprob[3] > 0.0)
-    DFpost2 = collectoutput2clone(getmodel(abcres, 3))
+  if (length(abcres.modelprob) > 2) && (abcres.modelprob[3] > 0.0)
+    DFpost2 = collectoutput2clone(getmodel(abcres, 3), Nmax = Nmaxinf)
     DFr = averagehistogram(abcres.particles, 3, VAF)
     if save == true
       writetable(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone2.csv"), DFpost2)
@@ -291,7 +291,9 @@ function getresults(abcres, resultsdirectory, sname, VAF; save = false)
     end
     push!(posteriors, Posterior(DFr, DFpost2, abcres.modelprob[3]))
   else
-    push!(posteriors, Posterior(DataFrame(), DataFrame(), abcres.modelprob[3]))
+    if (length(abcres.modelprob) > 2)
+      push!(posteriors, Posterior(DataFrame(), DataFrame(), abcres.modelprob[3]))
+    end
   end
 
   DF = DataFrame(Model = map(x -> string(x),0:length(abcres.modelprob) - 1), Probability = abcres.modelprob)

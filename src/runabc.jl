@@ -234,10 +234,11 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `ϵ1 = 10^6 `: Target ϵ for first ABC step, if you find the model with 2 clones often dies out, increase this.
 ...
 """
-function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true)
+function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true, Nmaxinf = 10^10)
 
   #make output directories
   if save != false
+    makedirectory(resultsdirectory)
     makedirectories(joinpath(resultsdirectory, sname))
   end
   detectionlimit = minreads/read_depth
@@ -307,7 +308,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
 
   show(abcres)
 
-  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory, sname), sname, VAF, save = save)
+  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory, sname), sname, VAF, save = save, Nmaxinf = Nmaxinf)
 
   return Results(abcsetup, abcres, VAF, posteriors, DFmp, sname)
 end
@@ -317,9 +318,9 @@ end
 
 If data is a string will read in file. File should be a 1 column text file with VAF values in the rows.
 """
-function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true)
+function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true, Nmaxinf = 10^10)
 
   VAF = readdlm(data)[:, 1]
 
-  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, inferdetection = inferdetection, ϵ1 = ϵ1, mincellularity = mincellularity, firstpass = firstpass)
+  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, inferdetection = inferdetection, ϵ1 = ϵ1, mincellularity = mincellularity, firstpass = firstpass, Nmaxinf = Nmaxinf)
 end
