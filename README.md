@@ -5,6 +5,17 @@ A Julia package for inferring the strength of selection from cancer sequencing d
 ## Getting Started
 Package has been tested extensively with [Julia](https://julialang.org/) v0.5.1 but should work with later versions. If there any problems please report an issue.
 
+To download the package, once you're in a Julia session type the following command:
+```
+Pkg.clone("https://github.com/marcjwilliams1/
+```
+
+You will also need the [CancerSeqSim.jl](https://github.com/marcjwilliams1/ApproxBayes.jl)) and  [ApproxBayes.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl)) packages, which can be downloaded using the following (all other dependencies should be downloaded automatically).
+```
+Pkg.clone("https://github.com/marcjwilliams1/ApproxBayes.jl")
+Pkg.clone("https://github.com/marcjwilliams1/CancerSeqSim.jl")
+```
+
 ## Input data
 Running an analysis requires variant allele frequencies (VAFs) as measured in deep sequencing of cancer samples. Generating the synthetic data assumes that the cancer is diploid, therefore any mutations falling in non-diploid regions should be removed. This does unfortunately mean that in highly aneuploid tumours, there will not be enough mutations to perform an analysis. We would recommend a minimum of 50 mutations.
 
@@ -42,11 +53,12 @@ plothistogram(out, 1)
 ```
 ![plot](/example/oneclone/plots/posterior-1clone.png)
 
-Note the ground truth of the parameters are:
+Note the ground truth of the parameters in this case are:
 ```
   mu = 20.0
   clonalmutations = 200
-  t = 7.3
+  s = 0.6
+  t = 8.3
   cellularity = 0.8
   freq = 0.59
   scmuts = 180
@@ -58,6 +70,3 @@ Finally we can also save all plots and text files with posterior distributions t
 saveresults(out; resultsdirectory = "example")
 saveallplots(out, resultsdirectory = "example")
 ```
-
-### Additional info
-The inference assumes mutations with a VAF of 5/read_depth is detectable. In some cases this may not be accurate. In particular if the cellularity is low this will have an effect on the ability to resolve low VAF mutations. For this purpose there is an optional argument ```inferdetection``` which if set to ```true``` will run a first pass on the data attempting to fit the tumour cellularity and then will attempt to correct the input depth and detection limit accordingly. The detection limit can also be inputted manually with eg ```detection_limit = 0.03```.
