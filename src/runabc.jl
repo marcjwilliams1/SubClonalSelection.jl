@@ -231,10 +231,12 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `verbose = true`: Print out summary at each ABC population step.
 - `save = false `: Save output or not
 - `inferdetection = false `: Do a first past to infer cellularity to modify sequencing depth and detection limit
-- `ϵ1 = 10^6 `: Target ϵ for first ABC step, if you find the model with 2 clones often dies out, increase this.
+- `ϵ1 = 10^6 `: Target ϵ for first ABC step, if you find the model with 2 clones often dies out, decrease this value
+- `firstpass = false`: If set to true will run a limited first pass of the algorithm to determine a good starting ϵ1 if this unkown.
+- `Nmaxinf = 10^10`: Scales selection coefficient value assuming the tumour size is Nmaxinf. Once value >10^9 has limited effect.
 ...
 """
-function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true, Nmaxinf = 10^10)
+function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = false, Nmaxinf = 10^10)
 
   #make output directories
   if save != false
