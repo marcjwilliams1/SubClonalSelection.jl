@@ -70,3 +70,8 @@ Finally we can also save all plots and text files with posterior distributions t
 saveresults(out; resultsdirectory = "example")
 saveallplots(out, resultsdirectory = "example")
 ```
+
+### Additional info
+One issue with model selection in the ABC SMC framework is that sometimes models can die out. This is particularly an issue if the prior probability of a particular parameter set is low, this will be the case for models with many parameters due to the large parameter space. For this application this can be an issue for the 2 clone model, which has the largest parameter space. To mitigate the problem of this model dying out before the algorithm has converged (where the most likely model could well be the 2 clone model) the optional argument `firstpass`, which if set to `true` will run a first pass on the data to choose a reasonable starting ϵ, where parameters already fit the data to a reasonable level before the SMC algorithm commences. Despite this, sometimes the 2 clone model will still die out, so for this reason we would recommend running the algorithm multiple times (this is recommended in any case and is good practice in Bayesian computational approaches).
+
+Note that if there is strong evidence for a neutral model, then having the 2 clone model with 0 probability is not a problem and in fact is quite likely.
