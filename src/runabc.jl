@@ -215,7 +215,7 @@ end
 """
     fitABCmodels(data::Array{Float64, 1}, sname::String; <keyword arguments>)
 
-Fit a stochastic model of cancer evolution to cancer sequencing data using Approximate Bayesian computation and infer the number of subclones (up to 2) and relative fitness of subclones.s
+Fit a stochastic model of cancer evolution to cancer sequencing data using Approximate Bayesian computation and infer the number of subclones (up to 2) and their relative fitness and time they emerge.
 ...
 ## Arguments
 - `read_depth = 200.0`: Mean read depth of the target data set
