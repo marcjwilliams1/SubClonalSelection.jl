@@ -10,7 +10,7 @@ To download the package, once you're in a Julia session type the following comma
 Pkg.clone("https://github.com/marcjwilliams1/SubClonalSelection.jl")
 ```
 
-You will also need the [CancerSeqSim.jl](https://github.com/marcjwilliams1/ApproxBayes.jl)) and  [ApproxBayes.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl)) packages, which can be downloaded using the following (all other dependencies should be downloaded automatically).
+You will also need the [CancerSeqSim.jl](https://github.com/marcjwilliams1/ApproxBayes.jl) and  [ApproxBayes.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl))packages, which can be downloaded using the following (all other dependencies should be downloaded automatically).
 ```
 Pkg.clone("https://github.com/marcjwilliams1/ApproxBayes.jl")
 Pkg.clone("https://github.com/marcjwilliams1/CancerSeqSim.jl")
