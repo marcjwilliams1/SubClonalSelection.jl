@@ -7,7 +7,7 @@ Package has been tested extensively with [Julia](https://julialang.org/) v0.5.1 
 
 To download the package, once you're in a Julia session type the following command:
 ```
-Pkg.clone("https://github.com/marcjwilliams1/
+Pkg.clone("https://github.com/marcjwilliams1/SubClonalSelection.jl")
 ```
 
 You will also need the [CancerSeqSim.jl](https://github.com/marcjwilliams1/ApproxBayes.jl)) and  [ApproxBayes.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl)) packages, which can be downloaded using the following (all other dependencies should be downloaded automatically).
@@ -72,6 +72,6 @@ saveallplots(out, resultsdirectory = "example")
 ```
 
 ### Additional info
-One issue with model selection in the ABC SMC framework is that sometimes models can die out. This is particularly an issue if the prior probability of a particular parameter set is low, this will be the case for models with many parameters due to the large parameter space. For this application this can be an issue for the 2 clone model, which has the largest parameter space. To mitigate the problem of this model dying out before the algorithm has converged (where the most likely model could well be the 2 clone model) the optional argument `firstpass`, which if set to `true` will run a first pass on the data to choose a reasonable starting ϵ, where parameters already fit the data to a reasonable level before the SMC algorithm commences. Despite this, sometimes the 2 clone model will still die out, so for this reason we would recommend running the algorithm multiple times (this is recommended in any case and is good practice in Bayesian computational approaches).
+One issue with model selection in the ABC SMC framework is that sometimes models can die out. This is particularly an issue if the prior probability of a particular parameter set is low, this will be the case for models with many parameters due to the large parameter space. For this application this can be an issue for the 2 clone model, which has the largest parameter space. To mitigate the problem of this model dying out before the algorithm has converged (where the most likely model could well be the 2 clone model) there is the optional argument `firstpass`, which if set to `true` will run a first pass on the data to choose a reasonable starting ϵ, where parameters already fit the data to a reasonable level before the SMC algorithm commences. Despite this, sometimes the 2 clone model will still die out, so for this reason we would recommend running the algorithm multiple times (this is recommended in any case and is good practice in Bayesian computational approaches).
 
-Note that if there is strong evidence for a neutral model, then having the 2 clone model with 0 probability is not a problem and in fact is quite likely.
+Note that if there is strong evidence for a neutral model, then having the 2 clone model with 0 probability is not a problem and in fact is quite likely. The additional model complexity provided by the selection model is unnecessary to explain the data.
