@@ -9,12 +9,18 @@ end
 
 function selection2clone(λ, f1, f2, tend, t1, t2)
     #define the equation for selection as above
-    if (f2 + f1) < 1.0
-      s1 = (λ .* t1 + log(f1 ./ (1 - f1 - f2))) ./ (λ .* (tend - t1))
-      s2 = (λ .* t2 + log(f2 ./ (1 - f1 - f2))) ./ (λ .* (tend - t2))
-    else
-      s1 = (λ .* t1 + log((f1 - f2) ./ (1 - f1))) ./ (λ .* (tend - t1))
-      s2 = (λ .* t2 + log(f2 ./ (1 - f1))) ./ (λ .* (tend - t2))
+
+    s1 = zeros(Float64, length(f1))
+    s2 = zeros(Float64, length(f1))
+
+    for i in 1:length(f1)
+      if (f2[i] + f1[i]) < 1.0
+        s1[i] = (λ .* t1[i] + log(f1[i] ./ (1 - f1[i] - f2[i]))) ./ (λ .* (tend[i] - t1[i]))
+        s2[i] = (λ .* t2[i] + log(f2[i] ./ (1 - f1[i] - f2[i]))) ./ (λ .* (tend[i] - t2[i]))
+      else
+        s1[i] = (λ .* t1[i] + log((f1[i] - f2[i]) ./ (1 - f1[i]))) ./ (λ .* (tend[i] - t1[i]))
+        s2[i] = (λ .* t2[i] + log(f2[i] ./ (1 - f1[i]))) ./ (λ .* (tend[i] - t2[i]))
+      end
     end
 
     return s1, s2
@@ -52,6 +58,20 @@ function swapvalues(x1, x2, indeces)
   return x1, x2
 end
 
+function clonesize(scfreq1, scfreq2)
+  #assume that if scfreq1 + scfreq2 > 1 then clones are nested
+  freqfactor = zeros(Float64, length(scfreq1))
+  for i in 1:length(scfreq1)
+    if (scfreq1[i] + scfreq2[i]) .> 1.0
+      freqfactor[i] = 1 - scfreq1[i]
+    else
+      freqfactor[i] = 1 - scfreq1[i] - scfreq2[i]
+    end
+  end
+
+  return freqfactor
+end
+
 function collectoutput2clone(abcres; Nmax = 10^10)
 
     scmuts1 = map(x -> x.other[2], abcres.particles)
@@ -78,9 +98,7 @@ function collectoutput2clone(abcres; Nmax = 10^10)
     s1, s2 = swapvalues(s1, s2, indeces)
     t1, t2 = swapvalues(t1, t2, indeces)
 
-    #hack so that nested clones don't cause errors
-    #freqfactor = map((x,y) -> maximum([x, y]), 1 - scfreq1 - scfreq2, ones(length(scfreq1))*0.01)
-    freqfactor = 1 - scfreq1 - scfreq2
+    freqfactor = clonesize(scfreq1, scfreq2)
 
     t1a = (scmuts1 ./ mu)
     t1b = (scmuts2 ./ mu)
