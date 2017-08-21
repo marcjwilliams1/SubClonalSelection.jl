@@ -7,11 +7,17 @@ function selection(λ, f, tend, t1)
     return s
 end
 
-function selection2clone(λ, f1, f2, tend, t1)
+function selection2clone(λ, f1, f2, tend, t1, t2)
     #define the equation for selection as above
-    s = (λ .* t1 + log(f1 ./ (1 - f1 - f2))) ./ (λ .* (tend - t1))
+    if (f2 + f1) < 1.0
+      s1 = (λ .* t1 + log(f1 ./ (1 - f1 - f2))) ./ (λ .* (tend - t1))
+      s2 = (λ .* t2 + log(f2 ./ (1 - f1 - f2))) ./ (λ .* (tend - t2))
+    else
+      s1 = (λ .* t1 + log((f1 - f2) ./ (1 - f1))) ./ (λ .* (tend - t1))
+      s2 = (λ .* t2 + log(f2 ./ (1 - f1))) ./ (λ .* (tend - t2))
+    end
 
-    return s
+    return s1, s2
 end
 
 function collectoutput1clone(abcres; Nmax = 10^10)
@@ -73,13 +79,13 @@ function collectoutput2clone(abcres; Nmax = 10^10)
     t1, t2 = swapvalues(t1, t2, indeces)
 
     #hack so that nested clones don't cause errors
-    freqfactor = map((x,y) -> maximum([x, y]), 1 - scfreq1 - scfreq2, ones(length(scfreq1))*0.01)
+    #freqfactor = map((x,y) -> maximum([x, y]), 1 - scfreq1 - scfreq2, ones(length(scfreq1))*0.01)
+    freqfactor = 1 - scfreq1 - scfreq2
 
     t1a = (scmuts1 ./ mu)
     t1b = (scmuts2 ./ mu)
     tend = (log(Nmax .* (freqfactor)) / log(2)) + eulergamma/log(2)
-    s1 = selection2clone(log(2), scfreq1, scfreq2, tend, t1a)
-    s2 = selection2clone(log(2), scfreq2, scfreq1, tend, t1b)
+    s1, s2 = selection2clone(log(2), scfreq1, scfreq2, tend, t1a, t1b)
 
     DF = DataFrame(mu = abcres.parameters[:, 1],
     clonalmutations = abcres.parameters[:, 2],
