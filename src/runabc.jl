@@ -149,8 +149,8 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
   cst = [ploidy, read_depth, d, b, ρ, Nmax, timefunc, detectionlimit];
 
   #priors
-  priormu = [0.01, 400.0]
-  priorcm = [0.0, 5000.0]
+  priormu = [0.01, 500.0]
+  priorcm = [0.0, 10000.0]
   priorcellularity = [mincellularity, 1.0]
 
   #need to create Prior type which has a distribution type array with a corresponding distribution specific parameter array
@@ -282,6 +282,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     println("################################################")
     println("Running first pass to get starting point for ABC")
     println("################################################")
+    println("")
     abcsetup = getsetup(1, detectionlimit = detectionlimit,
     read_depth = read_depth,
     maxiterations = 10^3,
@@ -293,8 +294,11 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     )
     abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
     eps1 = abcres.ϵ[end]
+    println("################################################")
+    println("Now running inference with ϵ1 = $(eps1)")
+    println("################################################")
+    println("")
   end
-
 
   abcsetup = getsetup(maxclones, detectionlimit = dl,
   read_depth = read_depth,
