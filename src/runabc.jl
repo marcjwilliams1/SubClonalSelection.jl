@@ -149,7 +149,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
   cst = [ploidy, read_depth, d, b, ρ, Nmax, timefunc, detectionlimit];
 
   #priors
-  priormu = [0.01, 200.0]
+  priormu = [0.01, 400.0]
   priorcm = [0.0, 5000.0]
   priorcellularity = [mincellularity, 1.0]
 
@@ -159,7 +159,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
      Uniform(priorcellularity...)])
 
   priorsel = [0.0, 20.0]
-  priort = [3.0, 12.0]
+  priort = [3.0, log(Nmax)/log(2)]
 
 priorselection = Prior([Uniform(priormu...),
    Uniform(priorcm...),
