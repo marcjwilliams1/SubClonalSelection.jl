@@ -34,7 +34,7 @@ function collectoutput1clone(abcres; Nmax = 10^10)
     mu = abcres.parameters[:, 1]
 
     # eulergamma/log(2) is stochastic correction see Durrett Branching Process Models of Cancer
-    t1 = (scmuts ./ mu) - eulergamma/log(2)
+    t1 = ((scmuts ./ mu) / (2 * log(2))) - eulergamma/log(2)
     tend = (log(Nmax .* (1 - scfreq)) / log(2)) + eulergamma/log(2)
     s = selection(log(2), scfreq, tend, t1)
 
@@ -101,8 +101,8 @@ function collectoutput2clone(abcres; Nmax = 10^10)
 
     freqfactor = clonesize(scfreq1, scfreq2)
 
-    t1a = (scmuts1 ./ mu) - eulergamma/log(2)
-    t1b = (scmuts2 ./ mu) - eulergamma/log(2)
+    t1a = ((scmuts1 ./ mu) / (2 * log(2))) - eulergamma/log(2)
+    t1b = ((scmuts2 ./ mu) / (2 * log(2))) - eulergamma/log(2)
     tend = (log(Nmax .* (freqfactor)) / log(2)) + eulergamma/log(2)
     s1, s2 = selection2clone(log(2), scfreq1, scfreq2, tend, t1a, t1b)
 
