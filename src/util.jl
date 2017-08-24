@@ -3,7 +3,6 @@ Mcdf(f,fmin,fmax) = (1.0./f - 1.0/fmax) ./ (1.0/fmin - 1.0/fmax)
 function selection(λ, f, tend, t1)
     #define the equation for selection as above
     s = (λ .* t1 + log(f ./ (1 - f))) ./ (λ .* (tend - t1))
-
     return s
 end
 
@@ -182,12 +181,9 @@ function averagehistogram(particles)
 
     M = zeros(Int64, 100, N)
     i = 1
-
     for j in 1:N
-
         M[:, i] = freqcounts = convert(Array, particles[i].other[1][:freq])
         i = i + 1
-
     end
 
     mvalues = Float64[]
@@ -232,10 +228,8 @@ function averagehistogram(particles, model, VAF)
     i = 1
 
     for j in 1:N
-
         M[:, i] = convert(Array, particles[i].other[1][:freq])
         i = i + 1
-
     end
 
     mvalues = Float64[]
@@ -279,7 +273,6 @@ end
 function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf = 10^10)
 
   posteriors = Posterior[]
-
   #save model posterior
   DFmp = DataFrame(Model = map(x -> string(x),0:length(abcres.modelprob) - 1), Probability = abcres.modelprob)
 
@@ -346,10 +339,9 @@ function makedirectories(resultsdirectory)
     mkdir(joinpath(resultsdirectory, "posterior"))
   end
 
-
-    if isdir(joinpath(resultsdirectory, "data")) == false
-      mkdir(joinpath(resultsdirectory, "data"))
-    end
+  if isdir(joinpath(resultsdirectory, "data")) == false
+    mkdir(joinpath(resultsdirectory, "data"))
+  end
 
 end
 

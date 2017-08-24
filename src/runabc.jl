@@ -278,7 +278,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     eps1 = abcres.ϵ[end]
   end
 
-  if firstpass == true
+  if (firstpass == true) && (length(VAF) < 1000)
     println("################################################")
     println("Running first pass to get starting point for ABC")
     println("################################################")
