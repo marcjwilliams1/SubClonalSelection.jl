@@ -66,6 +66,7 @@ function clonesize(scfreq1, scfreq2)
       freqfactor[i] = 1 - scfreq1[i]
     else
       freqfactor[i] = 1 - scfreq1[i] - scfreq2[i]
+      freqfactor[i] = maximum([0.001, freqfactor[i]])
     end
   end
 
