@@ -244,7 +244,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     makedirectory(resultsdirectory)
     makedirectories(joinpath(resultsdirectory, sname))
   end
-  detectionlimit = minreads/read_depth
+  #sequencing error is 1%, otherwise detection limit is controlled by minimum number of reads to call a variant
+  detectionlimit = maximum([0.01, minreads/read_depth])
 
   targetdata, VAF = gettargetDF(data, fmin = fmin, fmax = fmax)
   targetdataDF = targetdata.DF
