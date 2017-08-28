@@ -134,7 +134,7 @@ function tumourABCselection2(parameters, constants, targetdata)
     euclidean(AD.DF[:cumsum], targetdata[:cumsum]), out, c
 end
 
-function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.5, scalefactor = 4, ϵ1 = 10^6, mincellularity = 0.1)
+function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.5, scalefactor = 4, ϵ1 = 10^6, mincellularity = 0.1, ρ = 0.0)
 
   #function to define priors, constants and create ABCSMC model type
 
@@ -144,7 +144,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
   d = 0.0
   b = log(2)
   Nmax = Nmax
-  ρ = 0.0
+  ρ = ρ
 
   cst = [ploidy, read_depth, d, b, ρ, Nmax, timefunc, detectionlimit];
 
@@ -235,9 +235,10 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `firstpass = false`: If set to true will run a limited first pass of the algorithm to determine a good starting ϵ1 if this unkown.
 - `Nmaxinf = 10^10`: Scales selection coefficient value assuming the tumour size is Nmaxinf. Once value >10^9 has limited effect.
 - `scalefactor = 4`: Parameter for perturbation kernel for parameter values. Larger values means space will be explored more slowly but fewer particles will be perturbed outside prior range.
+- `ρ = 0.0`: Overdispersion parameter for beta-binomial model of sequencing data. ρ = 0.0 means model is binomial sampling
 ...
 """
-function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = false, Nmaxinf = 10^10, scalefactor = 4)
+function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = false, Nmaxinf = 10^10, scalefactor = 4, ρ = 0.0)
 
   #make output directories
   if save != false
@@ -310,7 +311,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
   convergence = 0.08,
   ϵ1 = eps1,
   Nmax = Nmax,
-  mincellularity = mincellularity
+  mincellularity = mincellularity,
+  ρ = ρ
   )
   abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
 
@@ -326,9 +328,9 @@ end
 
 If data is a string will read in file. File should be a 1 column text file with VAF values in the rows.
 """
-function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true, Nmaxinf = 10^10, scalefactor = 4)
+function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true, Nmaxinf = 10^10, scalefactor = 4, ρ = 0.0)
 
   VAF = readdlm(data)[:, 1]
 
-  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, inferdetection = inferdetection, ϵ1 = ϵ1, mincellularity = mincellularity, firstpass = firstpass, Nmaxinf = Nmaxinf, scalefactor = scalefactor)
+  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, inferdetection = inferdetection, ϵ1 = ϵ1, mincellularity = mincellularity, firstpass = firstpass, Nmaxinf = Nmaxinf, scalefactor = scalefactor, ρ = ρ)
 end
