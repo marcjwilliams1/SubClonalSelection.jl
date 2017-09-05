@@ -280,6 +280,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     eps1 = abcres.ϵ[end]
   end
 
+  nparts = nparticles
   if (firstpass == true) && (length(VAF) < 3000)
     println("################################################")
     println("Running first pass to get starting point for ABC")
@@ -287,15 +288,15 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     println("")
     abcsetup = getsetup(1, detectionlimit = detectionlimit,
     read_depth = read_depth,
-    maxiterations = 10^3,
     nparticles = 100,
+    maxiterations = 3 * nparts,
     modelkern = 0.5,
     scalefactor = scalefactor,
     Nmax = Nmax,
     mincellularity = mincellularity
     )
     abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
-    eps1 = abcres.ϵ[end]
+    eps1 = abcres.ϵ[maximum([1, length(abcres.ϵ) - 1])]
     println("################################################")
     println("Now running inference with ϵ1 = $(eps1)")
     println("################################################")
