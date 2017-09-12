@@ -1,7 +1,7 @@
 using SubClonalSelection
 
-out = fitABCmodels("example/neutral.txt",
-  "neutral",
+out = fitABCmodels("example/oneclone.txt",
+  "oneclone",
   read_depth = 150,
   resultsdirectory = "/Users/marcwilliams/Google\ Drive/test/",
   nparticles = 200,
@@ -9,4 +9,6 @@ out = fitABCmodels("example/neutral.txt",
   Nmax = 10^3,
   maxclones = 1,
   save = true,
-  firstpass = false);
+  firstpass = false,
+  verbose = true,
+  adaptpriors = true);
