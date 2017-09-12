@@ -134,7 +134,7 @@ function tumourABCselection2(parameters, constants, targetdata)
     euclidean(AD.DF[:cumsum], targetdata[:cumsum]), out, c
 end
 
-function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.5, scalefactor = 6, ϵ1 = 10^6, mincellularity = 0.1, ρ = 0.0)
+function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.4, scalefactor = 6, ϵ1 = 10^6, mincellularity = 0.1, ρ = 0.0)
 
   #function to define priors, constants and create ABCSMC model type
 
@@ -149,8 +149,9 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
   cst = [ploidy, read_depth, d, b, ρ, Nmax, timefunc, detectionlimit];
 
   #priors
-  priormu = [0.01, 500.0]
-  priorcm = [0.0, 10000.0]
+  #max mu is 1e-7 per bp per division, max cm is
+  priormu = [0.01, 620.0]
+  priorcm = [0.0, 31000.0]
   priorcellularity = [mincellularity, 1.0]
 
   #need to create Prior type which has a distribution type array with a corresponding distribution specific parameter array
@@ -158,7 +159,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
      Uniform(priorcm...),
      Uniform(priorcellularity...)])
 
-  priorsel = [0.0, 25.0]
+  priorsel = [3.0, 25.0]
   priort = [3.0, log(Nmax)/log(2) + (eulergamma / log(2))]
 
 priorselection = Prior([Uniform(priormu...),

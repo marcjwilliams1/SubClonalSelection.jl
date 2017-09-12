@@ -32,7 +32,7 @@ function collectoutput1clone(abcres; Nmax = 10^10)
     scfreq = map(x -> x.other[4], abcres.particles)
     mu = abcres.parameters[:, 1]
 
-    # eulergamma/log(2) is stochastic correction see Durrett Branching Process Models of Cancer
+    # eulergamma/log(2) is stochastic correction see Durrett Branching Process Models of Cancer, needed for selection calculation
     t1 = ((scmuts ./ mu) / (2 * log(2))) - eulergamma/log(2)
     tend = (log(Nmax .* (1 - scfreq)) / log(2)) + eulergamma/log(2)
     s = selection(log(2), scfreq, tend, t1)
@@ -147,7 +147,7 @@ function collectoutput(abcres, tend)
     scmuts = map(x -> Float64(x), scmuts))
 
     #euler gamma is a stochastic correction
-    DF[:s] = selection(log(2), scfreq, (log((1 - scfreq) * Nend)/log(2) ) + + (eulergamma/log(2)), Array(DF[:time]))
+    DF[:s] = selection(log(2), scfreq, (log((1 - scfreq) * Nend)/log(2) ) + (eulergamma/log(2)), Array(DF[:time]))
     return DF
 end
 
