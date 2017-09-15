@@ -239,7 +239,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `adaptpriors = false`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set
 ...
 """
-function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = false, Nmaxinf = 10^10, scalefactor = 6, ρ = 0.0, adaptpriors = false)
+function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = false, Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0, adaptpriors = false)
 
   #make output directories
   if save != false
@@ -262,35 +262,12 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
   # two extreme cases are mutations are all subclonal which defines a maximum mu,
   #or mutations are all clonal hich defines a maximum here
   if adaptpriors == true
-    maxmu = 2 * (length(data) / ((1/detectionlimit) - 1))
+    maxmu = 1.5 * (length(data) / ((1/detectionlimit) - 1))
     maxclonalmutations = length(data)
-    println("Prior on μ: [0.0, $(maxmu)] ")
-    println("Prior on clonalmutations: [0.0, $(maxclonalmutations)] ")
-  end
-
-  if inferdetection == true
-    abcsetup = getsetup(1, detectionlimit = detectionlimit,
-    read_depth = read_depth,
-    maxiterations = 10^3,
-    nparticles = 100,
-    modelkern = 0.5,
-    scalefactor = 6,
-    Nmax = Nmax,
-    mincellularity = mincellularity,
-    maxclonalmutations = maxclonalmutations,
-    maxmu = maxmu
-    )
-    abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
-    DFpost0 = collectoutput0clone(getmodel(abcres, 1))
-    c = mean(DFpost0[:cellularity])
-
-    println()
-    println("####################################################")
-    println("Now running real ABC with detection limit $(5./(c*read_depth))")
-    println("####################################################")
-    println()
-    dl = 5./(c*read_depth)
-    eps1 = abcres.ϵ[end]
+    if verbose == true
+      println("Prior on μ: [0.0, $(maxmu)] ")
+      println("Prior on clonalmutations: [0.0, $(maxclonalmutations)] ")
+    end
   end
 
   nparts = nparticles
@@ -346,9 +323,9 @@ end
 
 If data is a string will read in file. File should be a 1 column text file with VAF values in the rows.
 """
-function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, inferdetection = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true, Nmaxinf = 10^10, scalefactor = 6, ρ = 0.0, adaptpriors = true)
+function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true, Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0, adaptpriors = true)
 
   VAF = readdlm(data)[:, 1]
 
-  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, inferdetection = inferdetection, ϵ1 = ϵ1, mincellularity = mincellularity, firstpass = firstpass, Nmaxinf = Nmaxinf, scalefactor = scalefactor, ρ = ρ, adaptpriors = adaptpriors)
+  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, ϵ1 = ϵ1, mincellularity = mincellularity, firstpass = firstpass, Nmaxinf = Nmaxinf, scalefactor = scalefactor, ρ = ρ, adaptpriors = adaptpriors)
 end
