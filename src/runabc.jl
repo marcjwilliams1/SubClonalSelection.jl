@@ -150,16 +150,16 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
 
   priormu = [0.01, maxmu]
   priorcm = [0.0, Float64(maxclonalmutations)]
-  priorcellularity = [mincellularity, 1.0]
+  priorcellularity = [mincellularity, 1.1]
 
   #need to create Prior type which has a distribution type array with a corresponding distribution specific parameter array
   priorneutral = Prior([Uniform(priormu...),
      Uniform(priorcm...),
      Uniform(priorcellularity...)])
 
-   priort = [3.0, log(Nmax)/log(2) + (eulergamma / log(2))]
-   maxsel = selection(log(2), 0.9, priort[2], priort[2]-1)
-   priorsel = [1.0, maxsel]
+  priort = [3.0, log(Nmax)/log(2) + (eulergamma / log(2))]
+  maxsel = selection(log(2), 0.9, priort[2], priort[2]-1)
+  priorsel = [1.0, maxsel]
 
 priorselection = Prior([Uniform(priormu...),
    Uniform(priorcm...),
