@@ -157,8 +157,9 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
      Uniform(priorcm...),
      Uniform(priorcellularity...)])
 
-  priorsel = [3.0, 25.0]
-  priort = [3.0, log(Nmax)/log(2) + (eulergamma / log(2))]
+   priort = [3.0, log(Nmax)/log(2) + (eulergamma / log(2))]
+   maxsel = selection(log(2), 0.9, priort[2], priort[2]-1)
+   priorsel = [1.0, maxsel]
 
 priorselection = Prior([Uniform(priormu...),
    Uniform(priorcm...),
