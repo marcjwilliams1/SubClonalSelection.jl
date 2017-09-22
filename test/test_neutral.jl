@@ -13,7 +13,8 @@ out = fitABCmodels("data/neutral.txt",
   nparticles = 200,
   maxiterations = 3 * 10^4,
   Nmax = 10^3,
-  maxclones = 1);
+  maxclones = 1,
+  progress = true);
 
 # check if we get the correct model
 println("\tTesting posterior model probability returns neutral as most probable model...")

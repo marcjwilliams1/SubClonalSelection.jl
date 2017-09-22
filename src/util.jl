@@ -155,8 +155,8 @@ function cumulativedistribution(VAF; fmin = 0.1, fmax = 0.3)
 
     #calculate cumulative sum
     steps = fmax:-0.001:fmin
-    cumsum = Array(Int64, 0)
-    v = Array(Float64, 0)
+    cumsum = Array{Int64}(0)
+    v = Array{Float64}(0)
 
     for i in steps
         push!(cumsum, sum(VAF .>= i))
