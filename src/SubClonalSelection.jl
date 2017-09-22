@@ -22,7 +22,9 @@ export
   plothistogram,
   plotmodelposterior,
   plotparameterposterior,
-  saveallplots
+  saveallplots,
+  timefunc,
+  timefuncrand
 
 include("types.jl")
 include("runabc.jl")
