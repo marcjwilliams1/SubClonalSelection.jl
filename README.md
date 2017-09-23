@@ -16,6 +16,12 @@ Pkg.clone("https://github.com/marcjwilliams1/ApproxBayes.jl")
 Pkg.clone("https://github.com/marcjwilliams1/CancerSeqSim.jl")
 ```
 
+Then once you are in a julia session the package can be loaded with
+```
+using SubClonalSelection
+```
+Running `Pkg.test("SubClonalSelection") will run a test suite to confirm the algorithm works on some test data and recovers the ground truth from some know synthetic data.
+
 ## Input data
 Running an analysis requires variant allele frequencies (VAFs) as measured in deep sequencing of cancer samples. Generating the synthetic data assumes that the cancer is diploid, therefore any mutations falling in non-diploid regions should be removed. This does unfortunately mean that in highly aneuploid tumours, there will not be enough mutations to perform an analysis. We would recommend a minimum of 100 mutations.
 
@@ -72,6 +78,6 @@ saveallplots(out, resultsdirectory = "example")
 ```
 
 ### Additional info
-One issue with model selection in the ABC SMC framework is that sometimes models can die out. This is particularly an issue if the prior probability of a particular parameter set is low, this will be the case for models with many parameters due to the large parameter space. For this application this can be an issue for the 2 clone model, which has the largest parameter space. To mitigate the problem of this model dying out before the algorithm has converged (where the most likely model could well be the 2 clone model) there is the optional argument `firstpass`, which if set to `true` will run a first pass on the data to choose a reasonable starting ϵ, where parameters already fit the data to a reasonable level before the SMC algorithm commences. This mitigates the issue somewhat by in effect reducing the search space. Despite this, sometimes the 2 clone model will still die out, so for this reason we would recommend running the algorithm multiple times (this is recommended in any case and is good practice in Bayesian computational approaches).
+One issue with model selection in the ABC SMC framework is that sometimes models can die out. This is particularly an issue if the prior probability of a particular parameter set is low, this will be the case for models with many parameters due to the large parameter space. For this application this can be an issue for the 2 clone model, which has the largest parameter space. To mitigate the problem of this model dying out before the algorithm has converged (where the most likely model could well be the 2 clone model) there is the optional argument `firstpass`, which if set to `true` will run a first pass on the data to choose a reasonable starting point, where parameters already fit the data to a reasonable level before the SMC algorithm commences. The default setting is `firstpass = true`. This mitigates the issue somewhat by in effect reducing the search space. We would also recommend running the algorithm multiple times (this is recommended in any case and is good practice in Bayesian computational approaches).
 
-Note that if there is strong evidence for a neutral model, then having the 2 clone model with 0 probability is not a problem and in fact is quite likely. The additional model complexity provided by the selection model is unnecessary to explain the data.
+Note that if there is strong evidence for a neutral model, then having the 2 clone model with 0 probability is not a problem and in fact is quite likely. Here the additional model complexity provided by the selection model is unnecessary to explain the data.

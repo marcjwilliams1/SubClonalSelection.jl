@@ -13,8 +13,9 @@ out = fitABCmodels("data/oneclone.txt",
   nparticles = 200,
   maxiterations = 3 * 10^4,
   Nmax = 10^3,
-  maxclones = 2,
+  maxclones = 1,
   verbose = true,
+  firstpass = false,
   progress = true);
 
 # check if we get the correct model
@@ -31,3 +32,5 @@ println("\tChecking true parameters are within the 80% credible interval range..
 @test quantile(mu, 0.1) < 20.0 < quantile(mu, 0.9)
 @test quantile(clonalmutations, 0.1) < 200.0 < quantile(clonalmutations, 0.9)
 @test quantile(cellularity, 0.1) < 0.8 < quantile(cellularity, 0.9)
+
+println("All tests passed for single clone.")

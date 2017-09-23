@@ -2,7 +2,7 @@ Mcdf(f,fmin,fmax) = (1.0./f - 1.0/fmax) ./ (1.0/fmin - 1.0/fmax)
 
 function selection(λ, f, tend, t1)
     #define the equation for selection as above
-    s = (λ .* t1 + log(f ./ (1 - f))) ./ (λ .* (tend - t1))
+    s = (λ .* t1 + log.(f ./ (1 - f))) ./ (λ .* (tend - t1))
     return s
 end
 
@@ -14,11 +14,11 @@ function selection2clone(λ, f1, f2, tend, t1, t2)
 
     for i in 1:length(f1)
       if (f2[i] + f1[i]) < 1.0
-        s1[i] = (λ .* t1[i] + log(f1[i] ./ (1 - f1[i] - f2[i]))) ./ (λ .* (tend[i] - t1[i]))
-        s2[i] = (λ .* t2[i] + log(f2[i] ./ (1 - f1[i] - f2[i]))) ./ (λ .* (tend[i] - t2[i]))
+        s1[i] = (λ .* t1[i] + log.(f1[i] ./ (1 - f1[i] - f2[i]))) ./ (λ .* (tend[i] - t1[i]))
+        s2[i] = (λ .* t2[i] + log.(f2[i] ./ (1 - f1[i] - f2[i]))) ./ (λ .* (tend[i] - t2[i]))
       else
-        s1[i] = (λ .* t1[i] + log((f1[i] - f2[i]) ./ (1 - f1[i]))) ./ (λ .* (tend[i] - t1[i]))
-        s2[i] = (λ .* t2[i] + log(f2[i] ./ (1 - f1[i]))) ./ (λ .* (tend[i] - t2[i]))
+        s1[i] = (λ .* t1[i] + log.((f1[i] - f2[i]) ./ (1 - f1[i]))) ./ (λ .* (tend[i] - t1[i]))
+        s2[i] = (λ .* t2[i] + log.(f2[i] ./ (1 - f1[i]))) ./ (λ .* (tend[i] - t2[i]))
       end
     end
 
@@ -33,14 +33,14 @@ function collectoutput1clone(abcres; Nmax = 10^10)
     mu = abcres.parameters[:, 1]
 
     # eulergamma/log(2) is stochastic correction see Durrett Branching Process Models of Cancer, needed for selection calculation
-    t1 = ((scmuts ./ mu) / (2 * log(2))) - eulergamma/log(2)
-    tend = (log(Nmax .* (1 - scfreq)) / log(2)) + eulergamma/log(2)
-    s = selection(log(2), scfreq, tend, t1)
+    t1 = ((scmuts ./ mu) / (2 * log.(2))) - eulergamma/log.(2)
+    tend = (log.(Nmax .* (1 - scfreq)) / log.(2)) + eulergamma/log.(2)
+    s = selection(log.(2), scfreq, tend, t1)
 
     DF = DataFrame(mu = mu,
     clonalmutations = abcres.parameters[:, 2],
     s = s,
-    t = t1 + eulergamma/log(2),
+    t = t1 + eulergamma/log.(2),
     cellularity = abcres.parameters[:, 5],
     freq = scfreq,
     scmuts = map(x -> Float64(x), scmuts))
@@ -102,17 +102,17 @@ function collectoutput2clone(abcres; Nmax = 10^10)
 
     freqfactor = clonesize(scfreq1, scfreq2)
 
-    t1a = ((scmuts1 ./ mu) / (2 * log(2))) - eulergamma/log(2)
-    t1b = ((scmuts2 ./ mu) / (2 * log(2))) - eulergamma/log(2)
-    tend = (log(Nmax .* (freqfactor)) / log(2)) + eulergamma/log(2)
-    s1, s2 = selection2clone(log(2), scfreq1, scfreq2, tend, t1a, t1b)
+    t1a = ((scmuts1 ./ mu) / (2 * log.(2))) - eulergamma/log.(2)
+    t1b = ((scmuts2 ./ mu) / (2 * log.(2))) - eulergamma/log.(2)
+    tend = (log.(Nmax .* (freqfactor)) / log.(2)) + eulergamma/log.(2)
+    s1, s2 = selection2clone(log.(2), scfreq1, scfreq2, tend, t1a, t1b)
 
     DF = DataFrame(mu = abcres.parameters[:, 1],
     clonalmutations = abcres.parameters[:, 2],
     s1 = s1,
-    t1 = t1a + eulergamma/log(2),
+    t1 = t1a + eulergamma/log.(2),
     s2 = s2,
-    t2 = t1b + eulergamma/log(2),
+    t2 = t1b + eulergamma/log.(2),
     cellularity = abcres.parameters[:, 7],
     freq1 = scfreq1,
     freq2 = scfreq2,
@@ -133,7 +133,7 @@ end
 
 function collectoutput(abcres, tend)
 
-    Nend = exp(tend*log(2))
+    Nend = exp(tend*log.(2))
 
     scmuts = map(x -> x.other[2], abcres.particles)
     scdivs = map(x -> x.other[3], abcres.particles)
@@ -142,12 +142,12 @@ function collectoutput(abcres, tend)
     DF = DataFrame(mu = abcres.parameters[:, 1],
     clonalmutations = abcres.parameters[:, 2],
     freq = scfreq,
-    time = (1/(2*log(2))) .* (scmuts./abcres.parameters[:, 1] ),
+    time = (1/(2*log.(2))) .* (scmuts./abcres.parameters[:, 1] ),
     ndivs = scmuts./abcres.parameters[:, 1],
     scmuts = map(x -> Float64(x), scmuts))
 
     #euler gamma is a stochastic correction
-    DF[:s] = selection(log(2), scfreq, (log((1 - scfreq) * Nend)/log(2) ) + (eulergamma/log(2)), Array(DF[:time]))
+    DF[:s] = selection(log.(2), scfreq, (log.((1 - scfreq) * Nend)/log.(2) ) + (eulergamma/log.(2)), Array(DF[:time]))
     return DF
 end
 

@@ -5,13 +5,6 @@ function gettargetDF(VAF; fmin = 0.05, fmax = 0.75)
   return targetdataDF, VAF
 end
 
-function selection(λ, f, tend, t1)
-
-    s = (λ .* t1 + log(f ./ (1 - f))) ./ (λ .* (tend - t1))
-    return s
-end
-
-
 function getmodel(abcres, model)
 
     indeces = map(x -> x.model, abcres.particles) .== model
@@ -322,11 +315,12 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
   )
   abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
 
-  show(abcres)
+  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory, sname), sname, VAF, save = save, Nmaxinf = Nmaxinf);
 
-  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory, sname), sname, VAF, save = save, Nmaxinf = Nmaxinf)
+  finalresults = Results(abcsetup, abcres, VAF, posteriors, DFmp, sname);
+  show(finalresults)
 
-  return Results(abcsetup, abcres, VAF, posteriors, DFmp, sname)
+  return finalresults
 end
 
 """
