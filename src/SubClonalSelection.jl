@@ -18,7 +18,7 @@ export
 
 
   #functions
-  fitABCmodels#,
+  fitABCmodels,
   timefunc,
   timefuncrand
   #plothistogram,
