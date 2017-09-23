@@ -1,6 +1,5 @@
 using SubClonalSelection
 
-srand(1)
 @time out = fitABCmodels("example/oneclone.txt",
   "oneclone",
   read_depth = 150,

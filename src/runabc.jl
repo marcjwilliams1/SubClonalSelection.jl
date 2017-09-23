@@ -235,7 +235,14 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `b = log(2)`: Birth rate of the population. Set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
 ...
 """
-function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output", progress = true, verbose = true, save = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = false, Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0, adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))
+function fitABCmodels(data::Array{Float64, 1}, sname::String;
+  read_depth = 200.0, minreads = 5, fmin = 0.01,
+  fmax = 0.75, maxiterations = 10^4, maxclones = 2,
+  nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
+  progress = true, verbose = true, save = false,
+  ϵ1 = 10^6, mincellularity = 0.1, firstpass = false,
+  Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0,
+  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))
 
   #make output directories
   if save != false
@@ -295,6 +302,9 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String; read_depth = 200.0
     println("")
   end
 
+  println(timefunction())
+  println(ploidy)
+
   abcsetup = getsetup(maxclones, detectionlimit = dl,
   read_depth = read_depth,
   maxiterations = maxiterations,
@@ -328,9 +338,25 @@ end
 
 If data is a string will read in file. File should be a 1 column text file with VAF values in the rows.
 """
-function fitABCmodels(data::String, sname::String; read_depth = 200.0, minreads = 5, fmin = 0.01, fmax = 0.75, maxiterations = 10^4, maxclones = 2, nparticles = 500, Nmax = 10^3, resultsdirectory::String = "output", progress = true, verbose = true, save = false, ϵ1 = 10^6, mincellularity = 0.1, firstpass = true, Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0, adaptpriors = true,  timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))
+function fitABCmodels(data::String, sname::String;
+  read_depth = 200.0, minreads = 5, fmin = 0.01,
+  fmax = 0.75, maxiterations = 10^4, maxclones = 2,
+  nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
+  progress = true, verbose = true, save = false,
+  ϵ1 = 10^6, mincellularity = 0.1, firstpass = false,
+  Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0,
+  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))
 
   VAF = readdlm(data)[:, 1]
 
-  return fitABCmodels(VAF, sname; fmin = fmin, fmax = fmax, minreads = minreads, read_depth = read_depth, maxiterations = maxiterations, maxclones = maxclones, nparticles = nparticles, Nmax = Nmax, resultsdirectory = resultsdirectory, progress = progress, verbose = verbose, save = save, ϵ1 = ϵ1, mincellularity = mincellularity, firstpass = firstpass, Nmaxinf = Nmaxinf, scalefactor = scalefactor, ρ = ρ, adaptpriors = adaptpriors)
+  return fitABCmodels(VAF, sname;
+  fmin = fmin, fmax = fmax, minreads = minreads,
+  read_depth = read_depth, maxiterations = maxiterations,
+  maxclones = maxclones, nparticles = nparticles,
+  Nmax = Nmax, resultsdirectory = resultsdirectory,
+  progress = progress, verbose = verbose, save = save,
+  ϵ1 = ϵ1, mincellularity = mincellularity,
+  firstpass = firstpass, Nmaxinf = Nmaxinf,
+  scalefactor = scalefactor, ρ = ρ, adaptpriors = adaptpriors,
+  timefunction = timefunction, ploidy = ploidy, d = d, b = b)
 end
