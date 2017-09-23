@@ -19,7 +19,7 @@ export
 
 
   #functions
-  fitABCmodels#,
+  fitABCmodels,
   timefunc,
   timefuncrand,
   show
