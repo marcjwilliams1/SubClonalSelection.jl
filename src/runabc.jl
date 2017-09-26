@@ -63,7 +63,8 @@ function tumourABCselection(parameters, constants, targetdata)
                 tevent = [parameters[4]],
                 timefunction = cst[7],
                 detectionlimit = cst[8],
-                cellularity = parameters[5])
+                cellularity = parameters[5],
+                extrasubclonemutations = [round(parameters[6])])
 
     AD = CancerSeqSim.cumulativedist(simdata,
                         fmin = minimum(targetdata[:v]),
@@ -102,7 +103,8 @@ function tumourABCselection2(parameters, constants, targetdata)
                 tevent = [parameters[4], parameters[6]],
                 timefunction = cst[7],
                 detectionlimit = cst[8],
-                cellularity = parameters[7])
+                cellularity = parameters[7],
+                extrasubclonemutations = [round(parameters[8]), round(parameters[9])])
 
     AD = CancerSeqSim.cumulativedist(simdata,
                         fmin = minimum(targetdata[:v]),
@@ -143,11 +145,14 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
   priormu = [0.01, maxmu]
   priorcm = [0.0, Float64(maxclonalmutations)]
   priorcellularity = [mincellularity, 1.1]
+  priorextramutations = [0, round(maxmu * 5)]
 
   #need to create Prior type which has a distribution type array with a corresponding distribution specific parameter array
   priorneutral = Prior([Uniform(priormu...),
      Uniform(priorcm...),
-     Uniform(priorcellularity...)])
+     Uniform(priorcellularity...),
+     Uniform(priorextramutations...),
+     Uniform(priorextramutations...)])
 
   priort = [3.0, log(Nmax)/log(2) + (eulergamma / log(2))]
   maxsel = selection(log(2), 0.9, priort[2], priort[2] - 1)
@@ -157,7 +162,9 @@ priorselection = Prior([Uniform(priormu...),
    Uniform(priorcm...),
    Uniform(priorsel...),
    Uniform(priort...),
-   Uniform(priorcellularity...)])
+   Uniform(priorcellularity...),
+   Uniform(priorextramutations...),
+   Uniform(priorextramutations...)])
 
 priorselection2 = Prior([Uniform(priormu...),
    Uniform(priorcm...),
@@ -165,11 +172,13 @@ priorselection2 = Prior([Uniform(priormu...),
    Uniform(priort...),
    Uniform(priorsel...),
    Uniform(priort...),
-   Uniform(priorcellularity...)])
+   Uniform(priorcellularity...),
+   Uniform(priorextramutations...),
+   Uniform(priorextramutations...)])
 
-  nparamatersneutral = 3
-  nparametersselection = 5
-  nparametersselection2 = 7
+  nparamatersneutral = 5
+  nparametersselection = 7
+  nparametersselection2 = 9
 
   #for the ABCSMC Model selection, each input is an array of model specific parameters,
 

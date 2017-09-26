@@ -4,11 +4,13 @@ using SubClonalSelection
   "oneclone",
   read_depth = 150,
   resultsdirectory = "/Users/marcwilliams/Google\ Drive/test/",
-  nparticles = 200,
-  maxiterations = 5*10^3,
+  nparticles = 500,
+  maxiterations = 5*10^4,
   Nmax = 10^3,
-  maxclones = 1,
+  maxclones = 2,
   save = true,
   firstpass = false,
   verbose = true,
   adaptpriors = true);
+
+saveallplots(out, resultsdirectory = "/Users/marcwilliams/Google\ Drive/test/")
