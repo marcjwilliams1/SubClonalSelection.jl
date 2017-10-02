@@ -366,3 +366,35 @@ function show(res::Results)
 
   show(res.ABCresults)
 end
+
+
+function show(ABCresults::ApproxBayes.ABCSMCmodelresults)
+
+  @printf("Total number of simulations: %.2e\n", sum(ABCresults.numsims))
+  println("Cumulative number of simulations = $(cumsum(ABCresults.numsims))")
+  @printf("Acceptance ratio: %.2e\n\n", ABCresults.accratio)
+  println("Tolerance schedule = $(round.(ABCresults.ϵ, 2))\n")
+
+  print("Model probabilities:\n")
+  for j in 1:length(ABCresults.modelprob)
+    @printf("\tModel %d: %.3f\n", j, ABCresults.modelprob[j])
+  end
+  print("\nParameters:\n\n")
+
+  for j in 1:length(ABCresults.parameters)
+    print("Model $(j) ($(j - 1) subclones)\n")
+    upperci = zeros(Float64, size(ABCresults.parameters[j], 2))
+    lowerci = zeros(Float64, size(ABCresults.parameters[j], 2))
+    parametermeans = zeros(Float64, size(ABCresults.parameters[j], 2))
+    parametermedians = zeros(Float64, size(ABCresults.parameters[j], 2))
+    for i in 1:size(ABCresults.parameters[j], 2)
+      parametermeans[i] = mean(ABCresults.parameters[j][:, i])
+      parametermedians[i] = median(ABCresults.parameters[j][:, i])
+      (lowerci[i], upperci[i]) = quantile(ABCresults.parameters[j][:, i], [0.025,0.975])
+    end
+    print("\tMedian (95% intervals):\n")
+    for i in 1:(length(parametermeans))
+        @printf("\tParameter %d: %.2f (%.2f,%.2f)\n", i, parametermedians[i], lowerci[i], upperci[i])
+    end
+  end
+end

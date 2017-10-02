@@ -5,7 +5,7 @@ using SubClonalSelection
   read_depth = 150,
   resultsdirectory = "/Users/marcwilliams/Google\ Drive/early_events/Revisions/methodvalidation/tests/",
   nparticles = 250,
-  maxiterations = 5*10^4,
+  maxiterations = 7*10^4,
   Nmax = 10^3,
   Nmaxinf = 10^6,
   maxclones = 2,

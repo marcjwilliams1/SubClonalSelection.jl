@@ -44,11 +44,12 @@ function tumourABCneutral(parameters, constants, targetdata)
 end
 
 
-function tumourABCselection(parameters, constants, targetdata)
+function tumourABCselection(parameters, constants, targetdata, )
 
     # we only consider
 
     cst = constants
+    tout = 0.0
 
     simdata = simulate(nclones = 1,
                 ploidy = cst[1],
@@ -64,7 +65,7 @@ function tumourABCselection(parameters, constants, targetdata)
                 timefunction = cst[7],
                 detectionlimit = cst[8],
                 cellularity = parameters[5],
-                extrasubclonemutations = [round(parameters[6])])
+                minsubclonemutations = [round(parameters[6])])
 
     AD = CancerSeqSim.cumulativedist(simdata,
                         fmin = minimum(targetdata[:v]),
@@ -72,13 +73,19 @@ function tumourABCselection(parameters, constants, targetdata)
 
     if length(simdata.output.subclonemutations) == 0
         out = [simdata.sampleddata.DF, 0.0, 0.0, 0.0]
+        tout = 0.0
     else
         out = [simdata.sampleddata.DF, simdata.output.subclonemutations[1], simdata.output.Ndivisions[1], simdata.output.clonefreq[1]]
+        tout = (simdata.output.subclonemutations[1] / parameters[1]) / (2 * log(2))
     end
 
     c = false
     if ((sum(simdata.output.clonefreq.<0.95).==1) & (sum(simdata.output.clonefreq.>0.05).==1))[1] == true
         c = true
+    end
+
+    if tout > 20.0
+      c = false
     end
 
     euclidean(AD.DF[:cumsum], targetdata[:cumsum]), out, c
@@ -89,6 +96,7 @@ function tumourABCselection2(parameters, constants, targetdata)
     # we only consider
 
     cst = constants
+    tout = 0.0
 
     simdata = simulate(nclones = 2,
                 ploidy = cst[1],
@@ -104,7 +112,7 @@ function tumourABCselection2(parameters, constants, targetdata)
                 timefunction = cst[7],
                 detectionlimit = cst[8],
                 cellularity = parameters[7],
-                extrasubclonemutations = [round(parameters[8]), round(parameters[9])])
+                minsubclonemutations = [round(parameters[8]), round(parameters[9])])
 
     AD = CancerSeqSim.cumulativedist(simdata,
                         fmin = minimum(targetdata[:v]),
@@ -112,6 +120,7 @@ function tumourABCselection2(parameters, constants, targetdata)
 
     if length(simdata.output.subclonemutations) < 2
         out = [simdata.sampleddata.DF, 0.0, 0.0, 0.0]
+        tout = [0.0, 0.0]
     else
         out = [simdata.sampleddata.DF, simdata.output.subclonemutations[1],
         simdata.output.subclonemutations[2],
@@ -119,11 +128,16 @@ function tumourABCselection2(parameters, constants, targetdata)
         simdata.output.Ndivisions[2],
         simdata.output.clonefreq[1],
         simdata.output.clonefreq[2]]
+        tout = [(simdata.output.subclonemutations[1] / parameters[1]) / (2 * log(2)), (simdata.output.subclonemutations[1] / parameters[1]) / (2 * log(2))]
     end
 
     c = false
     if ((sum(simdata.output.clonefreq.<0.95).==2) & (sum(simdata.output.clonefreq.>0.05).==2))[1] == true
         c = true
+    end
+
+    if (tout[1] > 20.0) || (tout[2] > 20.0)
+      c = false
     end
 
     euclidean(AD.DF[:cumsum], targetdata[:cumsum]), out, c
@@ -145,7 +159,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
   priormu = [0.01, maxmu]
   priorcm = [0.0, Float64(maxclonalmutations)]
   priorcellularity = [mincellularity, 1.1]
-  priorextramutations = [0, round(maxmu * 5)]
+  priorextramutations = [0, Float64(maxclonalmutations / 2) ]
 
   #need to create Prior type which has a distribution type array with a corresponding distribution specific parameter array
   priorneutral = Prior([Uniform(priormu...),

@@ -10,7 +10,8 @@ using GLM
 using Gadfly
 using Colors
 
-import Base.show
+import Base.show, ApproxBayes.show
+
 
 export
   # types
@@ -24,7 +25,8 @@ export
   plotparameterposterior,
   saveallplots,
   timefunc,
-  timefuncrand
+  timefuncrand,
+  show
 
 include("types.jl")
 include("runabc.jl")
