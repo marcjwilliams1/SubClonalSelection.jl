@@ -24,7 +24,8 @@ export
   plotparameterposterior,
   saveallplots,
   timefunc,
-  timefuncrand
+  timefuncrand,
+  saveresults
 
 include("types.jl")
 include("runabc.jl")

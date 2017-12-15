@@ -267,13 +267,14 @@ end
 
 function saveresults(res::Results; resultsdirectory = "output")
 
-  makedirectories(joinpath(resultsdirectory, sname))
-  getresults(res.ABCresults, resultsdirectory, sname, save = true)
+  makedirectories(joinpath(resultsdirectory, res.SampleName))
+  getresults(res.ABCresults, resultsdirectory, res.SampleName, res.VAF, save = true)
   return
 end
 
 function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf = 10^10)
 
+  resultsdirectory = joinpath(resultsdirectory, sname)
   posteriors = Posterior[]
   #save model posterior
   DFmp = DataFrame(Model = map(x -> string(x),0:length(abcres.modelprob) - 1), Probability = abcres.modelprob)
