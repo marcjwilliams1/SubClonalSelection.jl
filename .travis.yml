@@ -13,6 +13,8 @@ notifications:
   email: false
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia --check-bounds=yes -e 'Pkg.clone("https://github.com/marcjwilliams1/ApproxBayes.jl"); Pkg.build("ApproxBayes");
+  - julia --check-bounds=yes -e 'Pkg.clone("https://github.com/marcjwilliams1/CancerSeqSim.jl"); Pkg.build("CancerSeqSim");
   - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("SubClonalSelection"); Pkg.test("SubClonalSelection"; coverage=true)'
 after_success:
     - julia -e 'cd(Pkg.dir("SubClonalSelection")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
