@@ -223,16 +223,16 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `verbose = true`: Print out summary at each ABC population step.
 - `save = false `: Save output or not
 - `inferdetection = false `: Do a first past to infer cellularity to modify sequencing depth and detection limit
-- `ϵ1 = 10^6 `: Target ϵ for first ABC step, if you find the model with 2 clones often dies out, decrease this value
+- `ϵ1 = 10^6 `: Target ϵ for first ABC step
 - `firstpass = false`: If set to true will run a limited first pass of the algorithm to determine a good starting ϵ1 if this unkown.
 - `Nmaxinf = 10^10`: Scales selection coefficient value assuming the tumour size is Nmaxinf. Once value >10^9 has limited effect.
-- `scalefactor = 6`: Parameter for perturbation kernel for parameter values. Larger values means space will be explored more slowly but fewer particles will be perturbed outside prior range.
+- `scalefactor = 2`: Parameter for perturbation kernel for parameter values. Larger values means space will be explored more slowly but fewer particles will be perturbed outside prior range.
 - `ρ = 0.0`: Overdispersion parameter for beta-binomial model of sequencing data. ρ = 0.0 means model is binomial sampling
 - `adaptpriors = false`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set
 - `timefunction = timefunc`: Function for KMC algorithm timestep. timefunc returns 1 meaning the timestep is the average of stochastic process. Alternatively timefuncrand can be specified which uses `-log(rand())` to increase the time step, so it is exponentially distributed rather than the mean of the exponential distribution.
 - `ploidy = 2`: ploidy of the genome
 - `d = 0.0`: Death rate of the thost population in the tumour
-- `b = log(2)`: Birth rate of the population. Set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
+- `b = log(2)`: Birth rate of the population. Deafult is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
 ...
 """
 function fitABCmodels(data::Array{Float64, 1}, sname::String;
@@ -255,7 +255,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   targetdata, VAF = gettargetDF(data, fmin = fmin, fmax = fmax)
   targetdataDF = targetdata.DF
   if save != false
-    writedlm(joinpath(joinpath(resultsdirectory, sname), "data", "$(sname).txt"), VAF)
+    writedlm(joinpath(joinpath(resultsdirectory, sname),
+    "data", "$(sname).txt"), VAF)
   end
 
   dl = detectionlimit

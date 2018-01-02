@@ -1,7 +1,7 @@
 #Run analysis with non-neutral data with 1 clone, input parameters:
 # mu = 20.0
 # cm = 200
-# cellularity = 0.8
+# cellularity = 0.7
 println()
 println("####################")
 println("Checking inference on non-neutral simulated data with known input parameters returns ground truth...")
@@ -13,17 +13,14 @@ out = fitABCmodels("data/oneclone.txt",
   nparticles = 200,
   maxiterations = 3 * 10^4,
   Nmax = 10^3,
-  maxclones = 2,
+  maxclones = 1,
   verbose = true,
   firstpass = false,
   progress = true);
 
 # check if we get the correct model
 println("\tTesting posterior model probability returns one clone as most probable model...")
-@test indmax(out.ModelProb[:Probability]) == 2
-
-println("\tTesting 2 clone model did not die out...")
-@test out.ModelProb[:Probability][3] > 0.0
+@test out.ModelProb[:Probability][2] > 0.5
 
 # extract parameters
 mu = out.Posterior[2].Parameters[:mu]

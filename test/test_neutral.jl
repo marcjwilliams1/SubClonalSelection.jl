@@ -18,8 +18,9 @@ out = fitABCmodels("data/neutral.txt",
   progress = true);
 
 # check if we get the correct model
+println("")
 println("\tTesting posterior model probability returns neutral as most probable model...")
-@test out.ModelProb[:Probability][1] > 0.5
+@test indmax(out.ModelProb[:Probability]) == 1
 
 # extract parameters
 mu = out.Posterior[1].Parameters[:mu]
