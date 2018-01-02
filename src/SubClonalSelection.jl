@@ -9,6 +9,7 @@ using Distances
 using GLM
 using Gadfly
 using Colors
+using StatsBase
 
 import Base.show
 
@@ -25,11 +26,12 @@ export
   saveallplots,
   timefunc,
   timefuncrand,
-  saveresults
+  saveresults,
+  show
 
 include("types.jl")
-include("runabc.jl")
 include("util.jl")
 include("plotting.jl")
+include("runabc.jl")
 
 end # module

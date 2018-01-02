@@ -12,3 +12,4 @@ using SubClonalSelection
   firstpass = false,
   verbose = true,
   adaptpriors = true);
+saveallplots(out, resultsdirectory = "example/")

@@ -31,6 +31,7 @@ function collectoutput1clone(abcres; Nmax = 10^10)
     scdivs = map(x -> x.other[3], abcres.particles)
     scfreq = map(x -> x.other[4], abcres.particles)
     mu = abcres.parameters[:, 1]
+    weights = abcres.weights
 
     # eulergamma/log(2) is stochastic correction see Durrett Branching Process Models of Cancer, needed for selection calculation
     t1 = ((scmuts ./ mu) / (2 * log.(2))) - eulergamma/log.(2)
@@ -43,7 +44,8 @@ function collectoutput1clone(abcres; Nmax = 10^10)
     t = t1 + eulergamma/log.(2),
     cellularity = abcres.parameters[:, 5],
     freq = scfreq,
-    scmuts = map(x -> Float64(x), scmuts))
+    scmuts = map(x -> Float64(x), scmuts),
+    weight = weights)
 
     return DF
 end
@@ -88,6 +90,7 @@ function collectoutput2clone(abcres; Nmax = 10^10)
     t1 = abcres.parameters[:, 4]
     s2 = abcres.parameters[:, 5]
     t2 = abcres.parameters[:, 6]
+    weights = abcres.weights
 
     scmuts1 = map(x -> Float64(x), scmuts1)
     scmuts2 = map(x -> Float64(x), scmuts2)
@@ -117,7 +120,8 @@ function collectoutput2clone(abcres; Nmax = 10^10)
     freq1 = scfreq1,
     freq2 = scfreq2,
     scmuts1 = scmuts1,
-    scmuts2 = scmuts2)
+    scmuts2 = scmuts2,
+    weight = weights)
 
     return DF
 end
@@ -127,8 +131,12 @@ function collectoutput0clone(abcres)
   mupost = abcres.parameters[:, 1]
   cmpost = abcres.parameters[:, 2]
   cellularity = abcres.parameters[:, 3]
+  weights = abcres.weights
 
-  DFpost = DataFrame(mu = mupost, clonalmutations = cmpost, cellularity = cellularity)
+  DFpost = DataFrame(mu = mupost,
+  clonalmutations = cmpost,
+  cellularity = cellularity,
+  weight = weights)
 end
 
 function collectoutput(abcres, tend)
@@ -224,6 +232,7 @@ function averagehistogram(particles, model, VAF)
     DFhist = DataFrame(VAF = x[1:end-1], freq = y.weights)
 
     particles = particles[map(x -> x.model, particles).==model]
+    wts = map(x -> x.weight, particles)
     N = length(particles)
 
     M = zeros(Int64, 100, N)
@@ -240,25 +249,22 @@ function averagehistogram(particles, model, VAF)
     lquart = Float64[]
     uquant = Float64[]
     uquart = Float64[]
-    sd = Float64[]
 
     for i in 1:size(M, 1)
-      push!(mvalues, median(vec(collect(M[i, :]'))))
-      push!(meanvalues, mean(vec(collect(M[i, :]'))))
-      push!(lquant, quantile(vec(collect(M[i, :]')), 0.025))
-      push!(uquant, quantile(vec(collect(M[i, :]')), 0.975))
-      push!(lquart, quantile(vec(collect(M[i, :]')), 0.25))
-      push!(uquart, quantile(vec(collect(M[i, :]')), 0.75))
-      push!(sd, std(vec(collect(M[i, :]'))))
+      push!(mvalues, median(vec(collect(M[i, :]')), weights(wts)))
+      push!(meanvalues, mean(vec(collect(M[i, :]')), weights(wts)))
+      push!(lquant, quantile(vec(collect(M[i, :]')), weights(wts), 0.025))
+      push!(uquant, quantile(vec(collect(M[i, :]')), weights(wts), 0.975))
+      push!(lquart, quantile(vec(collect(M[i, :]')), weights(wts), 0.25))
+      push!(uquart, quantile(vec(collect(M[i, :]')), weights(wts), 0.75))
     end
 
     DFr = DataFrame(median = mvalues,
                     mean = meanvalues,
-                    lowerq = lquant,
-                    upperq = uquant,
+                    lowerq95 = lquant,
+                    upperq95 = uquant,
                     lowerquartile = lquart,
                     upperquartile = uquart,
-                    sd = sd,
                     VAF = DFhist[:VAF],
                     truecounts = DFhist[:freq])
 

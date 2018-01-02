@@ -11,6 +11,7 @@ function getmodel(abcres, model)
     abcresnew = deepcopy(abcres)
     abcresnew.particles = abcresnew.particles[indeces]
     abcresnew.parameters = abcresnew.parameters[model]
+    abcresnew.weights = abcresnew.weights[model]
 
     return abcresnew
 end
@@ -326,10 +327,9 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   )
   abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
 
-  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory, sname), sname, VAF, save = save, Nmaxinf = Nmaxinf);
+  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory), sname, VAF, save = save, Nmaxinf = Nmaxinf);
 
   finalresults = Results(abcsetup, abcres, VAF, posteriors, DFmp, sname);
-  show(finalresults)
 
   return finalresults
 end

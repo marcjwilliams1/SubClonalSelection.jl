@@ -1,5 +1,10 @@
 # SubClonalSelection
 
+[![Build Status](https://travis-ci.org/marcjwilliams1/SubClonalSelection.jl.svg?branch=master)](https://travis-ci.org/marcjwilliams1/SubClonalSelection.jl)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/marcjwilliams1/SubClonalSelection.jl?branch=master&svg=true)](https://ci.appveyor.com/project/marcjwilliams1/SubClonalSelection-jl/branch/master)
+[![Coverage Status](https://coveralls.io/repos/github/marcjwilliams1/SubClonalSelection.jl/badge.svg?branch=master)](https://coveralls.io/github/marcjwilliams1/SubClonalSelection.jl?branch=master)
+[![codecov.io](http://codecov.io/github/marcjwilliams1/SubClonalSelection.jl/coverage.svg?branch=master)](http://codecov.io/github/marcjwilliams1/SubClonalSelection.jl?branch=master)
+
 A Julia package for inferring the strength of selection from cancer sequencing data. Package simultaneously estimates the number of subclones in the population and their relative fitnesses. This is done by generating synthetic data by simulating different population dynamics (see [CancerSeqSim.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl)) and fitting this to the model using Approximate Bayesian Computation (see [ApproxBayes.jl](https://github.com/marcjwilliams1/ApproxBayes.jl)).
 
 ## Getting Started
@@ -10,7 +15,7 @@ To download the package, once you're in a Julia session type the following comma
 Pkg.clone("https://github.com/marcjwilliams1/SubClonalSelection.jl")
 ```
 
-You will also need the [CancerSeqSim.jl](https://github.com/marcjwilliams1/ApproxBayes.jl) and  [ApproxBayes.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl) packages, which can be downloaded using the following (all other dependencies should be downloaded automatically).
+You will also need the [ApproxBayes.jl](https://github.com/marcjwilliams1/ApproxBayes.jl) and  [CancerSeqSim.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl) packages, which can be downloaded using the following (all other dependencies should be downloaded automatically).
 ```
 Pkg.clone("https://github.com/marcjwilliams1/ApproxBayes.jl")
 Pkg.clone("https://github.com/marcjwilliams1/CancerSeqSim.jl")
