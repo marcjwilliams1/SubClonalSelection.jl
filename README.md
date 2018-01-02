@@ -25,7 +25,7 @@ Then once you are in a julia session the package can be loaded with
 ```julia
 using SubClonalSelection
 ```
-Running `Pkg.test("SubClonalSelection")` will run a test suite to confirm the algorithm works on some test data and recovers the ground truth from some know synthetic data.
+Running `Pkg.test("SubClonalSelection")` will run a test suite to confirm the algorithm works on some test data and recovers the ground truth from some synthetic data with known input parameters.
 
 ## Input data
 Running an analysis requires variant allele frequencies (VAFs) as measured in deep sequencing of cancer samples. Generating the synthetic data assumes that the cancer is diploid, therefore any mutations falling in non-diploid regions should be removed. This does unfortunately mean that in highly aneuploid tumours, there will not be enough mutations to perform an analysis. We would recommend a minimum of 100 mutations.

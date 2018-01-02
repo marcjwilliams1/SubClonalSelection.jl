@@ -4,7 +4,7 @@ os:
   - linux
 julia:
   - 0.6
-#  - 0.5
+  - 0.5
 #  - nightly
 matrix:
   allow_failures:
