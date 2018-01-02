@@ -50,19 +50,19 @@ Plot the posterior model probabilities.
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/example/oneclone/plots/modelposterior.png)
+![plot](/example/oneclone/plots/oneclone-modelposterior.png)
 
 Plot the histogram for model 2.
 ```julia
 plothistogram(out, 1)
 ```
-![plot](/example/oneclone/plots/histogram-1clone.png)
+![plot](/example/oneclone/plots/oneclone-histogram-1clone.png)
 
 Plot the posterior parameter distribution for model 2.
 ```julia
 plothistogram(out, 1)
 ```
-![plot](/example/oneclone/plots/posterior-1clone.png)
+![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
 
 Note the ground truth of the parameters in this case are:
 ```julia
