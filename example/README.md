@@ -79,7 +79,7 @@ Finally we can plot the posterior distributions of the parameters and check whet
 ```julia
 plotparameterposterior(out, 0)
 ```
-![plot](/example/neutral/plots/neutral-posterior-1clone.png)
+![plot](/example/neutral/plots/neutral-posterior-0clone.png)
 
 
 ## Example 2 - Synthetic data with 1 subclone
