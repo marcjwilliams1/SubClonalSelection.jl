@@ -124,7 +124,7 @@ plothistogram(out, 1) #0 specified to only plot data from simulations of model 0
 ```julia
 plotparameterposterior(out, 1)
 ```
-![plot](/oneclone/plots/oneclone-posterior-1clone.png)
+![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
 
 
 ## Example 3
