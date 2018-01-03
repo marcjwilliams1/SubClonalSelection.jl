@@ -32,7 +32,6 @@ An analysis is performed with the ```fitABCmodels``` function that takes as inpu
 - `d = 0.0`: Death rate of the thost population in the tumour
 - `b = log(2)`: Birth rate of the population. Default is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
 
-
 ## Example 1 - Neutral synthetic data
 For the first example we'll take some synthetic data ("neutral.txt") generated from a neutral simulation of tumour evolution. The input parameters for the simulations were as follows:
 - Mutation rate: 20.0
@@ -53,7 +52,7 @@ We'll now use ```fitABCmodels``` from ```SubClonalSelection``` to attempt to rec
 out = fitABCmodels("example/neutral.txt", # text file with data
   "neutral", # sample name
   read_depth = 150,
-  resultsdirectory = "example/",
+  resultsdirectory = "", #use this directory
   nparticles = 100,
   maxiterations = 2 * 10^5,
   Nmax = 10^3,
@@ -61,7 +60,6 @@ out = fitABCmodels("example/neutral.txt", # text file with data
   save = true,
   firstpass = false,
   verbose = true,
-  adaptpriors = true,
   Nmaxinf = 10^6);
 ```
 
@@ -79,6 +77,86 @@ plothistogram(out, 0) #0 specified to only plot data from simulations of model 0
 ![plot](/neutral/plots/neutral-histogram-0clone.png)
 Finally we can plot the posterior distributions of the parameters and check whether we have correctly identified the true parameters. As would be hoped in this case the mode of the posteriors do indeed closely match the true input parameters.
 ```julia
-plotparameterposterior(out, 1)
+plotparameterposterior(out, 0)
 ```
 ![plot](/neutral/plots/neutral-posterior-1clone.png)
+
+
+## Example 2 - Synthetic data with 1 subclone
+For this second example  we'll take some synthetic data ("oneclone.txt") generated from a simulation of tumour evolution that contains a single subclone. The input parameters for the simulations were as follows:
+- Mutation rate: 20.0
+- Number of clonal mutation: 300
+- Number of subclones: 0 (ie neutral)
+- Cellularity: 0.7
+- Tumour population size: 10^6
+- Subclone frequency: 0.38
+- Fitness advantage: 0.67
+- Time emerges (tumour doublings): 7.8
+
+As before we'll use ```fitABCmodels``` to attempt to recover these parameters as well as the correct number of subclones (1).
+
+```julia
+out = fitABCmodels("example/oneclone.txt", # text file with data
+  "oneclone", # sample name
+  read_depth = 150,
+  resultsdirectory = "", #use this directory
+  nparticles = 100,
+  maxiterations = 2 * 10^5,
+  Nmax = 10^3,
+  maxclones = 2,
+  save = true,
+  firstpass = false,
+  verbose = true,
+  Nmaxinf = 10^6);
+```
+
+As in the neutral example we can confirm we recover the input number of subclones and parameters by plotting the posterior distribution.
+```julia
+plotmodelposterior(out)
+```
+![plot](/oneclone/plots/oneclone-modelposterior.png)
+
+```julia
+plothistogram(out, 1) #0 specified to only plot data from simulations of model 0
+```
+![plot](/oneclone/plots/oneclone-histogram-0clone.png)
+
+```julia
+plotparameterposterior(out, 1)
+```
+![plot](/oneclone/plots/oneclone-posterior-1clone.png)
+
+
+## Example 3
+For the final example we'll take some real data from Nik-Zainal et al Cell 2012 which is presented in figure 3 Williams et al 2018. We found that this data was most consistent with 2 subclones, which can be easily seen from the data.
+
+```julia
+out = fitABCmodels("example/nikzainal.txt",
+  "nikzainal",
+  read_depth = 180,
+  resultsdirectory = "",
+  nparticles = 100,
+  maxiterations = 2 * 10^5,
+  minreads = 7, # we observed that we could detect things above ~4% VAF
+  Nmax = 10^3,
+  maxclones = 2,
+  save = true,
+  firstpass = false,
+  verbose = true);
+```
+
+We'll now look at the results of the inference as before.
+```julia
+plotmodelposterior(out)
+```
+![plot](/nikzainal/plots/nikzainal-modelposterior.png)
+
+```julia
+plothistogram(out, 1) #0 specified to only plot data from simulations of model 0
+```
+![plot](/nikzainal/plots/nikzainal-histogram-0clone.png)
+
+```julia
+plotparameterposterior(out, 1)
+```
+![plot](/nikzainal/plots/nikzainal-posterior-1clone.png)
