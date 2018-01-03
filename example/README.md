@@ -67,19 +67,19 @@ This may take ~30-60 minutes on a desktop computer. With this output we can then
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/neutral/plots/neutral-modelposterior.png)
+![plot](/example/neutral/plots/neutral-modelposterior.png)
 
 We can visually inspect how well this model fits the data by overlaying a summary (mean and 95% credible intervals) of the VAF data from simulations that were accepted on top of the target data set.
 Plot the histogram for model 2.
 ```julia
 plothistogram(out, 0) #0 specified to only plot data from simulations of model 0
 ```
-![plot](/neutral/plots/neutral-histogram-0clone.png)
+![plot](/example/neutral/plots/neutral-histogram-0clone.png)
 Finally we can plot the posterior distributions of the parameters and check whether we have correctly identified the true parameters. As would be hoped in this case the mode of the posteriors do indeed closely match the true input parameters.
 ```julia
 plotparameterposterior(out, 0)
 ```
-![plot](/neutral/plots/neutral-posterior-1clone.png)
+![plot](/example/neutral/plots/neutral-posterior-1clone.png)
 
 
 ## Example 2 - Synthetic data with 1 subclone
@@ -114,12 +114,12 @@ As in the neutral example we can confirm we recover the input number of subclone
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/oneclone/plots/oneclone-modelposterior.png)
+![plot](/example/oneclone/plots/oneclone-modelposterior.png)
 
 ```julia
 plothistogram(out, 1) #0 specified to only plot data from simulations of model 0
 ```
-![plot](/oneclone/plots/oneclone-histogram-0clone.png)
+![plot](/example/oneclone/plots/oneclone-histogram-0clone.png)
 
 ```julia
 plotparameterposterior(out, 1)
@@ -149,14 +149,14 @@ We'll now look at the results of the inference as before.
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/nikzainal/plots/nikzainal-modelposterior.png)
+![plot](/example/nikzainal/plots/nikzainal-modelposterior.png)
 
 ```julia
 plothistogram(out, 1) #0 specified to only plot data from simulations of model 0
 ```
-![plot](/nikzainal/plots/nikzainal-histogram-0clone.png)
+![plot](/example/nikzainal/plots/nikzainal-histogram-0clone.png)
 
 ```julia
 plotparameterposterior(out, 1)
 ```
-![plot](/nikzainal/plots/nikzainal-posterior-1clone.png)
+![plot](/example/nikzainal/plots/nikzainal-posterior-1clone.png)
