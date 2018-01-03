@@ -34,8 +34,8 @@ end
 function plotparameterposterior(res, model = 1)
 
     model = model + 1
-
     DF = stack(res.Posterior[model].Parameters)
+    DF = DF[DF[:variable] .!= :weight, :]
     plot(DF, x=:value, xgroup=:variable,
     Geom.subplot_grid(Geom.histogram(bincount = 30), free_x_axis=true),
     Theme(

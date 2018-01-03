@@ -219,13 +219,12 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `maxclones = 2`: Maximum number of clones, can be 1 or 2
 - `nparticles = 500`: Number of particles (ie samples) in the ABC output
 - `Nmax = 10^4`: Maximum population size used to fit data, increase if suspect that there is a late arising clone
-- `resultsdirectory = "output" `: Directory where posterior distributions will be saved to
+- `resultsdirectory = "output" `: Directory where posterior distributions will be saved to, this directory will be created if it does not already exist.
 - `progress = true`: Show progress of ABC sampler with `ProgressMeter` package
 - `verbose = true`: Print out summary at each ABC population step.
 - `save = false `: Save output or not
-- `inferdetection = false `: Do a first past to infer cellularity to modify sequencing depth and detection limit
 - `ϵ1 = 10^6 `: Target ϵ for first ABC step
-- `firstpass = false`: If set to true will run a limited first pass of the algorithm to determine a good starting ϵ1 if this unkown.
+- `firstpass = false`: If set to true will run a limited first pass of the algorithm to determine a good starting ϵ1 if this unknown.
 - `Nmaxinf = 10^10`: Scales selection coefficient value assuming the tumour size is Nmaxinf. Once value >10^9 has limited effect.
 - `scalefactor = 2`: Parameter for perturbation kernel for parameter values. Larger values means space will be explored more slowly but fewer particles will be perturbed outside prior range.
 - `ρ = 0.0`: Overdispersion parameter for beta-binomial model of sequencing data. ρ = 0.0 means model is binomial sampling
@@ -233,7 +232,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `timefunction = timefunc`: Function for KMC algorithm timestep. timefunc returns 1 meaning the timestep is the average of stochastic process. Alternatively timefuncrand can be specified which uses `-log(rand())` to increase the time step, so it is exponentially distributed rather than the mean of the exponential distribution.
 - `ploidy = 2`: ploidy of the genome
 - `d = 0.0`: Death rate of the thost population in the tumour
-- `b = log(2)`: Birth rate of the population. Deafult is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
+- `b = log(2)`: Birth rate of the population. Default is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
 ...
 """
 function fitABCmodels(data::Array{Float64, 1}, sname::String;
