@@ -56,7 +56,7 @@ plothistogram(out, 1)
 
 Plot the posterior parameter distribution for model 2.
 ```julia
-plothistogram(out, 1)
+plotparameterposterior(out, 1)
 ```
 ![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
 

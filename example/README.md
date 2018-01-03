@@ -7,7 +7,7 @@ First I'll go through some of the basics of the package and the options availabl
 ## `fitABCmodels` function
 An analysis is performed with the ```fitABCmodels``` function that takes as input either a vector of Floats or a string pointing to a text file containing a vector of floats. These values are the VAF values from a deep sequencing experiment. There are a number of parameters that can be modified in the ```fitABCmodels``` function, these are given below and can also be accessed with ```?fitABCmodels``` in a Julia session.
 
-...
+
 ### Function arguments
 - `read_depth = 200.0`: Mean read depth of the target data set
 - `minreads = 5`: Minimum number of reads to identify a mutation
@@ -31,7 +31,54 @@ An analysis is performed with the ```fitABCmodels``` function that takes as inpu
 - `ploidy = 2`: ploidy of the genome
 - `d = 0.0`: Death rate of the thost population in the tumour
 - `b = log(2)`: Birth rate of the population. Default is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
-...
+
 
 ## Example 1 - Neutral synthetic data
-For the first example we'll take some synthetic data generated from a neutral simulation of tumour evolution. The input parameters are as follows:
+For the first example we'll take some synthetic data ("neutral.txt") generated from a neutral simulation of tumour evolution. The input parameters for the simulations were as follows:
+- Mutation rate: 20.0
+- Number of clonal mutation: 300
+- Number of subclones: 0 (ie neutral)
+- Cellularity: 0.7
+- Tumour population size: 10^6
+
+First we'll load the packages that we need.
+```julia
+using SubClonalSelection
+using Gadfly
+using DataFrames
+```
+We'll now use ```fitABCmodels``` from ```SubClonalSelection``` to attempt to recover these parameters as well as the number of subclones.
+
+```julia
+out = fitABCmodels("example/neutral.txt", # text file with data
+  "neutral", # sample name
+  read_depth = 150,
+  resultsdirectory = "example/",
+  nparticles = 100,
+  maxiterations = 2 * 10^5,
+  Nmax = 10^3,
+  maxclones = 2,
+  save = true,
+  firstpass = false,
+  verbose = true,
+  adaptpriors = true,
+  Nmaxinf = 10^6);
+```
+
+This may take ~30-60 minutes on a desktop computer. With this output we can then plot the distributions to see if we get the right answers. First we'll plot the model posterior probabilities, we would hope to see model 0 (0 subclones) with the highest probability which is exactly what we see.
+```julia
+plotmodelposterior(out)
+```
+![plot](/neutral/plots/neutral-modelposterior.png)
+
+We can visually inspect how well this model fits the data by overlaying a summary (mean and 95% credible intervals) of the VAF data from simulations that were accepted on top of the target data set.
+Plot the histogram for model 2.
+```julia
+plothistogram(out, 0) #0 specified to only plot data from simulations of model 0
+```
+![plot](/neutral/plots/neutral-histogram-0clone.png)
+Finally we can plot the posterior distributions of the parameters and check whether we have correctly identified the true parameters. As would be hoped in this case the mode of the posteriors do indeed closely match the true input parameters.
+```julia
+plotparameterposterior(out, 1)
+```
+![plot](/neutral/plots/neutral-posterior-1clone.png)
