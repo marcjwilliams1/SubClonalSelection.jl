@@ -4,6 +4,7 @@ function plothistogram(res, model = 0)
   DFres = res.Posterior[model].MeanHistogram
   DFres[:VAF] = collect(0.01:0.01:1.0)
   DF = DataFrame(VAF = res.VAF)
+  DFres = DFres[1:75, :]
 
   l1 = layer(DFres, x = :VAF, y = :mean, ymin = :lowerq95, ymax = :upperq95, Geom.line, Geom.ribbon,
   Theme(default_color = RGBA(0.75, 0.3, 0.3),
