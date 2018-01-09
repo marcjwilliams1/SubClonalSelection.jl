@@ -117,9 +117,9 @@ plotmodelposterior(out)
 ![plot](/example/oneclone/plots/oneclone-modelposterior.png)
 
 ```julia
-plothistogram(out, 1) #0 specified to only plot data from simulations of model 0
+plothistogram(out, 1) #1 specified to only plot data from simulations of model 0
 ```
-![plot](/example/oneclone/plots/oneclone-histogram-0clone.png)
+![plot](/example/oneclone/plots/oneclone-histogram-1clone.png)
 
 ```julia
 plotparameterposterior(out, 1)
@@ -152,11 +152,11 @@ plotmodelposterior(out)
 ![plot](/example/nikzainal/plots/nikzainal-modelposterior.png)
 
 ```julia
-plothistogram(out, 1) #0 specified to only plot data from simulations of model 0
+plothistogram(out, 2) #2 specified to only plot data from simulations of model 0
 ```
-![plot](/example/nikzainal/plots/nikzainal-histogram-0clone.png)
+![plot](/example/nikzainal/plots/nikzainal-histogram-2clone.png)
 
 ```julia
-plotparameterposterior(out, 1)
+plotparameterposterior(out, 2)
 ```
-![plot](/example/nikzainal/plots/nikzainal-posterior-1clone.png)
+![plot](/example/nikzainal/plots/nikzainal-posterior-2clone.png)

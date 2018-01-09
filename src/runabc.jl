@@ -1,8 +1,8 @@
 function gettargetDF(VAF; fmin = 0.05, fmax = 0.75)
 
-  targetdataDF = cumulativedistribution(VAF, fmin = fmin, fmax = fmax)
+  targetdataCDF = getCDF(VAF, 0.001, fmin = fmin, fmax = fmax)
 
-  return targetdataDF, VAF
+  return targetdataCDF, VAF
 end
 
 function getmodel(abcres, model)
@@ -14,6 +14,34 @@ function getmodel(abcres, model)
     abcresnew.weights = abcresnew.weights[model]
 
     return abcresnew
+end
+
+function getCDF3(vaf::Array, step_size::Float64; fmin = 0.05, fmax = 0.7)
+  steps = collect(fmin:step_size:fmax)
+  cdf = map(x -> sum(vaf .< x), steps)
+  cdf = cdf - cdf[1]
+  return cdf
+end
+
+function getCDF2(VAF::Array, step_size::Float64; fmin = 0.05, fmax = 0.7)
+
+  steps = fmax:-0.001:fmin
+  cumsum = zeros(Float64, length(steps))
+
+  for i in 1:length(steps)
+      cumsum[i] = Float64(sum(VAF .>= steps[i]))
+  end
+  cumsum = cumsum - cumsum[1]
+
+  return cumsum
+end
+
+function getCDF(VAF::Array, step_size::Float64; fmin = 0.05, fmax = 0.7)
+
+  out = cumsum(fit(Histogram, VAF, fmax:-step_size:fmin,closed=:left).weights[1:end - 1])
+  out = out - out[1]
+
+  return out
 end
 
 function tumourABCneutral(parameters, constants, targetdata)
@@ -37,11 +65,11 @@ function tumourABCneutral(parameters, constants, targetdata)
                 tevent = Float64[],
                 cellularity = parameters[3])
 
-    AD = CancerSeqSim.cumulativedist(simdata,
-                    fmin = minimum(targetdata[:v]),
-                    fmax = maximum(targetdata[:v]))
+    simdatacdf = getCDF(simdata.sampleddata.VAF, 0.001,
+                    fmin = cst[9],
+                    fmax = cst[10])
 
-    return euclidean(AD.DF[:cumsum], targetdata[:cumsum]), [simdata.sampleddata.DF], true
+    return euclidean(simdatacdf, targetdata), [simdata.sampleddata.DF], true
 end
 
 
@@ -66,9 +94,9 @@ function tumourABCselection(parameters, constants, targetdata)
                 detectionlimit = cst[8],
                 cellularity = parameters[5])
 
-    AD = CancerSeqSim.cumulativedist(simdata,
-                        fmin = minimum(targetdata[:v]),
-                        fmax = maximum(targetdata[:v]))
+    simdatacdf = getCDF(simdata.sampleddata.VAF, 0.001,
+                    fmin = cst[9],
+                    fmax = cst[10])
 
     if length(simdata.output.subclonemutations) == 0
         out = [simdata.sampleddata.DF, 0.0, 0.0, 0.0]
@@ -81,7 +109,7 @@ function tumourABCselection(parameters, constants, targetdata)
         c = true
     end
 
-    euclidean(AD.DF[:cumsum], targetdata[:cumsum]), out, c
+    euclidean(simdatacdf, targetdata), out, c
 end
 
 function tumourABCselection2(parameters, constants, targetdata)
@@ -105,9 +133,9 @@ function tumourABCselection2(parameters, constants, targetdata)
                 detectionlimit = cst[8],
                 cellularity = parameters[7])
 
-    AD = CancerSeqSim.cumulativedist(simdata,
-                        fmin = minimum(targetdata[:v]),
-                        fmax = maximum(targetdata[:v]))
+    simdatacdf = getCDF(simdata.sampleddata.VAF, 0.001,
+                    fmin = cst[9],
+                    fmax = cst[10])
 
     if length(simdata.output.subclonemutations) < 2
         out = [simdata.sampleddata.DF, 0.0, 0.0, 0.0]
@@ -125,13 +153,13 @@ function tumourABCselection2(parameters, constants, targetdata)
         c = true
     end
 
-    euclidean(AD.DF[:cumsum], targetdata[:cumsum]), out, c
+    euclidean(simdatacdf, targetdata), out, c
 end
 
 timefunc() = 1
 timefuncrand() = -log(rand())
 
-function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.4, scalefactor = 6, ϵ1 = 10^6, mincellularity = 0.1, ρ = 0.0, maxclonalmutations = 10000.0, maxmu = 620.0, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))
+function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.4, scalefactor = 6, ϵ1 = 10^6, mincellularity = 0.1, ρ = 0.0, maxclonalmutations = 10000.0, maxmu = 620.0, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), fmin = 0.05, fmax = 0.05)
 
   #function to define priors, constants and create ABCSMC model type
 
@@ -139,7 +167,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
   Nmax = Nmax
   ρ = ρ
 
-  cst = [ploidy, read_depth, d, b, ρ, Nmax, timefunction, detectionlimit];
+  cst = [ploidy, read_depth, d, b, ρ, Nmax, timefunction, detectionlimit, fmin, fmax];
 
   priormu = [0.01, maxmu]
   priorcm = [0.0, Float64(maxclonalmutations)]
@@ -253,7 +281,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   detectionlimit = maximum([0.01, minreads/read_depth])
 
   targetdata, VAF = gettargetDF(data, fmin = fmin, fmax = fmax)
-  targetdataDF = targetdata.DF
+  targetdataCDF = targetdata
   if save != false
     writedlm(joinpath(joinpath(resultsdirectory, sname),
     "data", "$(sname).txt"), VAF)
@@ -293,9 +321,11 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     timefunction = timefunction,
     ploidy = ploidy,
     d = d,
-    b = b
+    b = b,
+    fmin = fmin,
+    fmax = fmax
     )
-    abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
+    abcres = ApproxBayes.runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
     eps1 = abcres.ϵ[maximum([1, length(abcres.ϵ) - 1])]
     println("################################################")
     println("Now running inference with ϵ1 = $(eps1)")
@@ -322,9 +352,11 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   timefunction = timefunction,
   ploidy = ploidy,
   d = d,
-  b = b
+  b = b,
+  fmin = fmin,
+  fmax = fmax
   )
-  abcres = ApproxBayes.runabcCancer(abcsetup, targetdataDF, verbose = verbose, progress = progress);
+  abcres = ApproxBayes.runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
 
   posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory), sname, VAF, save = save, Nmaxinf = Nmaxinf);
 
