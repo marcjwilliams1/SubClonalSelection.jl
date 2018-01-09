@@ -95,7 +95,7 @@ function collectoutput2clone(abcres; Nmax = 10^10)
     scmuts1 = map(x -> Float64(x), scmuts1)
     scmuts2 = map(x -> Float64(x), scmuts2)
 
-    indeces = !(scfreq1 .> scfreq2)
+    indeces = .!(scfreq1 .> scfreq2)
 
     scfreq1, scfreq2 = swapvalues(scfreq1, scfreq2, indeces)
     scmuts1, scmuts2 = swapvalues(scmuts1, scmuts2, indeces)

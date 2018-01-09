@@ -16,26 +16,6 @@ function getmodel(abcres, model)
     return abcresnew
 end
 
-function getCDF3(vaf::Array, step_size::Float64; fmin = 0.05, fmax = 0.7)
-  steps = collect(fmin:step_size:fmax)
-  cdf = map(x -> sum(vaf .< x), steps)
-  cdf = cdf - cdf[1]
-  return cdf
-end
-
-function getCDF2(VAF::Array, step_size::Float64; fmin = 0.05, fmax = 0.7)
-
-  steps = fmax:-0.001:fmin
-  cumsum = zeros(Float64, length(steps))
-
-  for i in 1:length(steps)
-      cumsum[i] = Float64(sum(VAF .>= steps[i]))
-  end
-  cumsum = cumsum - cumsum[1]
-
-  return cumsum
-end
-
 function getCDF(VAF::Array, step_size::Float64; fmin = 0.05, fmax = 0.7)
 
   out = cumsum(fit(Histogram, VAF, fmax:-step_size:fmin,closed=:left).weights[1:end - 1])
