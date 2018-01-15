@@ -35,7 +35,7 @@ function collectoutput1clone(abcres; Nmax = 10^10)
 
     # eulergamma/log(2) is stochastic correction see Durrett Branching Process Models of Cancer, needed for selection calculation
     t1 = ((scmuts ./ mu) / (2 * log.(2))) - eulergamma/log.(2)
-    tend = (log.(Nmax .* (1 - scfreq)) / log.(2)) + eulergamma/log.(2)
+    tend = (log.(Nmax .* (1 - scfreq)) / log.(2)) #+ eulergamma/log.(2)
     s = selection(log.(2), scfreq, tend, t1)
 
     DF = DataFrame(mu = mu,
@@ -372,4 +372,54 @@ end
 function show(res::Results)
 
   show(res.ABCresults)
+end
+
+
+function show(ABCresults::ApproxBayes.ABCSMCmodelresults)
+
+  posteriors, DFmp = getresults(ABCresults, "nothing", "nothing", [1.0, 2.0]; save = false, Nmaxinf = 10^10)
+
+  @printf("Total number of simulations: %.2e\n", sum(ABCresults.numsims))
+  println("Cumulative number of simulations = $(cumsum(ABCresults.numsims))")
+  @printf("Acceptance ratio: %.2e\n\n", ABCresults.accratio)
+  println("Tolerance schedule = $(round.(ABCresults.ϵ, 2))\n")
+
+  print("Model probabilities:\n")
+  for j in 1:length(ABCresults.modelprob)
+    @printf("\tModel %d (%d subclones): %.3f\n", j, j-1, ABCresults.modelprob[j])
+  end
+
+  print("\nParameters:\n\n")
+
+  for j in 1:length(ABCresults.parameters)
+    if ABCresults.modelprob[j] > 0.0
+      print("Model $j ($(j-1) subclones)\n")
+
+      upperci = zeros(Float64, size(posteriors[j].Parameters, 2) - 1)
+      lowerci = zeros(Float64, size(posteriors[j].Parameters, 2) - 1)
+      parametermeans = zeros(Float64, size(posteriors[j].Parameters, 2) - 1)
+      parametermedians = zeros(Float64, size(posteriors[j].Parameters, 2) - 1)
+
+      for i in 1:(size(posteriors[j].Parameters, 2) - 1)
+        parametermeans[i] = mean(posteriors[j].Parameters[:, i],
+        weights(posteriors[j].Parameters[:weight]))
+        parametermedians[i] = median(posteriors[j].Parameters[:, i],
+        weights(posteriors[j].Parameters[:weight]))
+        (lowerci[i], upperci[i]) = quantile(posteriors[j].Parameters[:, i],
+        weights(posteriors[j].Parameters[:weight]), [0.025,0.975])
+      end
+
+      print("\tMedian (95% intervals):\n")
+      for i in 1:length(parametermeans)
+          if j == 1
+            parameternames = ["μ", "Clonal Mutations", "Cellularity"]
+          elseif j == 2
+            parameternames = ["μ", "Clonal Mutations", "Fitness", "Time", "Cellularity", "Subclone Frequency", "Subclone Mutations"]
+          elseif j == 3
+            parameternames = ["μ", "Clonal Mutations", "Fitness - Subclone 1", "Time - Subclone 1", "Fitness - Subclone 2", "Time - Subclone 2", "Cellularity", "Subclone 1 Frequency", "Subclone 2 Frequency", "Subclone 1 Mutations", "Subclone 2 Mutations"]
+          end
+          @printf("\tParameter %d - %s: %.2f (%.2f,%.2f)\n", i, parameternames[i], parametermedians[i], lowerci[i], upperci[i])
+      end
+    end
+  end
 end

@@ -118,7 +118,7 @@ function tumourABCselection2(parameters, constants, targetdata)
                     fmax = cst[10])
 
     if length(simdata.output.subclonemutations) < 2
-        out = [simdata.sampleddata.DF, 0.0, 0.0, 0.0]
+        out = [simdata.sampleddata.DF, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     else
         out = [simdata.sampleddata.DF, simdata.output.subclonemutations[1],
         simdata.output.subclonemutations[2],
@@ -158,9 +158,9 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
      Uniform(priorcm...),
      Uniform(priorcellularity...)])
 
-  priort = [3.0, log(Nmax)/log(2) + (eulergamma / log(2))]
-  maxsel = selection(log(2), 0.9, priort[2], priort[2] - 1)
-  priorsel = [1.0, maxsel]
+  priort = [2.0, log(Nmax)/log(2) + (eulergamma / log(2))]
+  maxsel = selection(log(2), 0.99, priort[2], priort[2] - 1)
+  priorsel = [0.0, maxsel]
 
 priorselection = Prior([Uniform(priormu...),
    Uniform(priorcm...),
@@ -247,7 +247,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   read_depth = 200.0, minreads = 5, fmin = 0.01,
   fmax = 0.75, maxiterations = 10^4, maxclones = 2,
   nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
-  progress = true, verbose = true, save = false,
+  progress = true, verbose = false, save = false,
   ϵ1 = 10^6, mincellularity = 0.1, firstpass = false,
   Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0,
   adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))
@@ -313,9 +313,6 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     println("")
   end
 
-  println(timefunction())
-  println(ploidy)
-
   abcsetup = getsetup(maxclones, detectionlimit = dl,
   read_depth = read_depth,
   maxiterations = maxiterations,
@@ -354,7 +351,7 @@ function fitABCmodels(data::String, sname::String;
   read_depth = 200.0, minreads = 5, fmin = 0.01,
   fmax = 0.75, maxiterations = 10^4, maxclones = 2,
   nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
-  progress = true, verbose = true, save = false,
+  progress = true, verbose = false, save = false,
   ϵ1 = 10^6, mincellularity = 0.1, firstpass = false,
   Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0,
   adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))

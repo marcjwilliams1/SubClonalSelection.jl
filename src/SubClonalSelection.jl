@@ -11,7 +11,7 @@ using Gadfly
 using Colors
 using StatsBase
 
-import Base.show
+import Base.show, ApproxBayes.show
 
 export
   # types
