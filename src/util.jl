@@ -377,7 +377,7 @@ end
 
 function show(ABCresults::ApproxBayes.ABCSMCmodelresults)
 
-  posteriors, DFmp = getresults(ABCresults, "nothing", "nothing", [1.0, 2.0]; save = false, Nmaxinf = 10^10)
+  posteriors, DFmp = getresults(ABCresults, "nothing", "nothing", [1.0, 2.0]; save = false, Nmaxinf = ABCresults.setup.other)
 
   @printf("Total number of simulations: %.2e\n", sum(ABCresults.numsims))
   println("Cumulative number of simulations = $(cumsum(ABCresults.numsims))")
@@ -412,11 +412,11 @@ function show(ABCresults::ApproxBayes.ABCSMCmodelresults)
       print("\tMedian (95% intervals):\n")
       for i in 1:length(parametermeans)
           if j == 1
-            parameternames = ["μ", "Clonal Mutations", "Cellularity"]
+            parameternames = ["μ/β", "Clonal Mutations", "Cellularity"]
           elseif j == 2
-            parameternames = ["μ", "Clonal Mutations", "Fitness", "Time", "Cellularity", "Subclone Frequency", "Subclone Mutations"]
+            parameternames = ["μ/β", "Clonal Mutations", "Fitness", "Time", "Cellularity", "Subclone Frequency", "Subclone Mutations"]
           elseif j == 3
-            parameternames = ["μ", "Clonal Mutations", "Fitness - Subclone 1", "Time - Subclone 1", "Fitness - Subclone 2", "Time - Subclone 2", "Cellularity", "Subclone 1 Frequency", "Subclone 2 Frequency", "Subclone 1 Mutations", "Subclone 2 Mutations"]
+            parameternames = ["μ/β", "Clonal Mutations", "Fitness - Subclone 1", "Time - Subclone 1", "Fitness - Subclone 2", "Time - Subclone 2", "Cellularity", "Subclone 1 Frequency", "Subclone 2 Frequency", "Subclone 1 Mutations", "Subclone 2 Mutations"]
           end
           @printf("\tParameter %d - %s: %.2f (%.2f,%.2f)\n", i, parameternames[i], parametermedians[i], lowerci[i], upperci[i])
       end

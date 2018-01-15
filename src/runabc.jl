@@ -139,7 +139,7 @@ end
 timefunc() = 1
 timefuncrand() = -log(rand())
 
-function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.4, scalefactor = 6, ϵ1 = 10^6, mincellularity = 0.1, ρ = 0.0, maxclonalmutations = 10000.0, maxmu = 620.0, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), fmin = 0.05, fmax = 0.05)
+function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.4, scalefactor = 6, ϵ1 = 10^6, mincellularity = 0.1, ρ = 0.0, maxclonalmutations = 10000.0, maxmu = 620.0, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), fmin = 0.05, fmax = 0.05, Nmaxinf = 10^10)
 
   #function to define priors, constants and create ABCSMC model type
 
@@ -194,7 +194,8 @@ priorselection2 = Prior([Uniform(priormu...),
     convergence = convergence,
     modelkern = modelkern,
     scalefactor = scalefactor,
-    ϵ1 = ϵ1);
+    ϵ1 = ϵ1,
+    other = Nmaxinf);
   elseif maxclones == 2
     setup = ABCSMCModel(
     [tumourABCneutral, tumourABCselection, tumourABCselection2], #simulation functions
@@ -207,7 +208,8 @@ priorselection2 = Prior([Uniform(priormu...),
     convergence = convergence,
     modelkern = modelkern,
     scalefactor = scalefactor,
-    ϵ1 = ϵ1);
+    ϵ1 = ϵ1,
+    other = Nmaxinf);
   end
 
   return setup
@@ -303,7 +305,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     d = d,
     b = b,
     fmin = fmin,
-    fmax = fmax
+    fmax = fmax,
+    Nmaxinf = Nmaxinf
     )
     abcres = ApproxBayes.runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
     eps1 = abcres.ϵ[maximum([1, length(abcres.ϵ) - 1])]
@@ -331,7 +334,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   d = d,
   b = b,
   fmin = fmin,
-  fmax = fmax
+  fmax = fmax,
+  Nmaxinf = Nmaxinf
   )
   abcres = ApproxBayes.runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
 
