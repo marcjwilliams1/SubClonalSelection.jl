@@ -86,12 +86,12 @@ plotparameterposterior(out, 0)
 For this second example  we'll take some synthetic data ("oneclone.txt") generated from a simulation of tumour evolution that contains a single subclone. The input parameters for the simulations were as follows:
 - Mutation rate: 20.0
 - Number of clonal mutation: 300
-- Number of subclones: 0 (ie neutral)
+- Number of subclones: 1
 - Cellularity: 0.7
 - Tumour population size: 10^6
-- Subclone frequency: 0.38
-- Fitness advantage: 0.67
-- Time emerges (tumour doublings): 7.8
+- Subclone frequency: 0.58
+- Fitness advantage: 1.03
+- Time emerges (tumour doublings): 9.0
 
 As before we'll use ```fitABCmodels``` to attempt to recover these parameters as well as the correct number of subclones (1).
 

@@ -1,3 +1,11 @@
 *.jl.cov
 *.jl.*.cov
 *.jl.mem
+oneclone-*/**
+/oneclone-*/**
+example/oneclone-*/
+oneclone-*.txt
+example/example.jl
+example/otherdata/*
+/example/otherdata/*
+example/nikzainal/

@@ -64,11 +64,11 @@ Note the ground truth of the parameters in this case are:
 ```julia
   mu = 20.0
   clonalmutations = 300
-  s = 0.67
-  t = 8.0
+  s = 1.03
+  t = 9.0
   cellularity = 0.7
-  freq = 0.38
-  scmuts = 227
+  freq = 0.58
+  scmuts = 251
 ```
 
 Finally we can also save all plots and text files with posterior distributions to a directory, unless specified the default will be to create a file a directory called ```output``` in the current working directory.

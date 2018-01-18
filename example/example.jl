@@ -7,7 +7,7 @@ srand(1)
   read_depth = 300,
   resultsdirectory = "example/",
   nparticles = 100,
-  maxiterations = 2*10^5,
+  maxiterations = 5*10^5,
   Nmax = 2^12,
   maxclones = 1,
   save = true,
@@ -24,7 +24,41 @@ srand(1)
   read_depth = 300,
   resultsdirectory = "example/",
   nparticles = 100,
-  maxiterations = 2*10^5,
+  maxiterations = 5*10^5,
+  Nmax = 2^12,
+  maxclones = 1,
+  save = true,
+  adaptpriors = true,
+  verbose = true,
+  Nmaxinf = 10^6,
+  fmin = 0.01);
+saveallplots(out, resultsdirectory = "example/")
+
+srand(1)
+#5509 seconds
+@time out = fitABCmodels("example/oneclone-3.txt",
+  "oneclone-3",
+  read_depth = 500,
+  resultsdirectory = "example/",
+  nparticles = 100,
+  maxiterations = 5*10^5,
+  Nmax = 2^12,
+  maxclones = 1,
+  save = true,
+  adaptpriors = true,
+  verbose = true,
+  Nmaxinf = 10^6,
+  fmin = 0.01);
+saveallplots(out, resultsdirectory = "example/")
+
+srand(1)
+#5509 seconds
+@time out = fitABCmodels("example/oneclone-4.txt",
+  "oneclone-4",
+  read_depth = 300,
+  resultsdirectory = "example/",
+  nparticles = 100,
+  maxiterations = 5*10^5,
   Nmax = 2^12,
   maxclones = 1,
   save = true,
@@ -47,6 +81,7 @@ srand(123)
   save = true,
   Nmax = 2^12,
   adaptpriors = true,
+  verbose = true,
   Nmaxinf = 10^6,
   fmin = 0.01);
 saveallplots(out, resultsdirectory = "example/")
