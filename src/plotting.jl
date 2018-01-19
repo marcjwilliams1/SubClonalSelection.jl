@@ -7,7 +7,7 @@ function plothistogram(res, model = 0)
   DFres = DFres[1:75, :]
 
   l1 = layer(DFres, x = :VAF, y = :mean, ymin = :lowerq95, ymax = :upperq95, Geom.line, Geom.ribbon,
-  Theme(default_color = RGBA(0.75, 0.3, 0.3),
+  Theme(line_width = 0.1cm, default_color = RGBA(0.75, 0.3, 0.3),
   lowlight_color=c->RGBA{Float32}(c.r, c.g, c.b, 0.5)))
   l2 = layer(DFres, x = :VAF, y = :truecounts, Geom.bar,
   Theme(default_color = RGBA(0.5, 0.5, 0.5, 0.8),

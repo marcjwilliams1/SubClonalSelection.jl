@@ -17,6 +17,7 @@ srand(1)
   fmin = 0.01);
 saveallplots(out, resultsdirectory = "example/")
 
+
 srand(1)
 #5509 seconds
 @time out = fitABCmodels("example/oneclone-2.txt",
@@ -64,9 +65,100 @@ srand(1)
   save = true,
   adaptpriors = true,
   verbose = true,
-  Nmaxinf = 10^6,
+  Nmaxinf = 10^0,
   fmin = 0.01);
 saveallplots(out, resultsdirectory = "example/")
+
+
+
+srand(1)
+@time out = fitABCmodels("example/otherdata/data/MO_1444.txt",
+  "MO_1044",
+  read_depth = 171,
+  resultsdirectory = "example/otherdata/",
+  nparticles = 100,
+  maxiterations = 10^5,
+  Nmax = 2^12,
+  maxclones = 1,
+  save = true,
+  adaptpriors = true,
+  verbose = true,
+  Nmaxinf = 10^10,
+  minreads = round(Int64, 171*0.05),
+  fmin = 0.05);
+saveallplots(out, resultsdirectory = "example/otherdata/")
+
+srand(1)
+@time out = fitABCmodels("example/otherdata/data/MO_1031.txt",
+  "MO_1031",
+  read_depth = 151,
+  resultsdirectory = "example/otherdata/",
+  nparticles = 100,
+  maxiterations = 10^5,
+  Nmax = 2^12,
+  maxclones = 1,
+  save = true,
+  adaptpriors = true,
+  verbose = true,
+  Nmaxinf = 10^10,
+  minreads = round(Int64, 151*0.05),
+  fmin = 0.05);
+saveallplots(out, resultsdirectory = "example/otherdata/")
+
+srand(1)
+@time out = fitABCmodels("example/otherdata/data/MO_1425.txt",
+  "MO_1425",
+  read_depth = 185,
+  resultsdirectory = "example/otherdata/",
+  nparticles = 100,
+  maxiterations = 10^5,
+  Nmax = 2^12,
+  maxclones = 1,
+  save = true,
+  adaptpriors = true,
+  verbose = true,
+  Nmaxinf = 10^10,
+  minreads = round(Int64, 185*0.05),
+  fmin = 0.05);
+saveallplots(out, resultsdirectory = "example/otherdata/")
+
+srand(123)
+@time out = fitABCmodels("example/otherdata/data/4990-12.txt",
+  "4990-12",
+  read_depth = 150,
+  resultsdirectory = "example/otherdata/",
+  nparticles = 100,
+  maxiterations = 10^5,
+  Nmax = 2^12,
+  maxclones = 2,
+  ρ = 0.005,
+  save = true,
+  adaptpriors = false,
+  verbose = true,
+  Nmaxinf = 10^10,
+  minreads = round(Int64, 150*0.05),
+  mincellularity = 0.95,
+  fmin = 0.05);
+saveallplots(out, resultsdirectory = "example/otherdata/")
+
+srand(1)
+@time out = fitABCmodels("example/otherdata/data/4990-14.txt",
+  "4990-14",
+  read_depth = 150,
+  resultsdirectory = "example/otherdata/",
+  nparticles = 100,
+  maxiterations = 10^5,
+  Nmax = 2^12,
+  maxclones = 1,
+  ρ = 0.005,
+  save = true,
+  adaptpriors = false,
+  verbose = true,
+  Nmaxinf = 10^10,
+  minreads = round(Int64, 150*0.05),
+  mincellularity = 0.95,
+  fmin = 0.05);
+saveallplots(out, resultsdirectory = "example/otherdata/")
 
 
 srand(123)
@@ -82,8 +174,8 @@ srand(123)
   Nmax = 2^12,
   adaptpriors = true,
   verbose = true,
-  Nmaxinf = 10^6,
-  fmin = 0.01);
+  Nmaxinf = 10^10,
+  fmin = 0.05);
 saveallplots(out, resultsdirectory = "example/")
 
 

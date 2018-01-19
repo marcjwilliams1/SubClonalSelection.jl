@@ -139,7 +139,7 @@ end
 timefunc() = 1
 timefuncrand() = -log(rand())
 
-function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.4, scalefactor = 6, ϵ1 = 10^6, mincellularity = 0.1, ρ = 0.0, maxclonalmutations = 10000.0, maxmu = 620.0, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), fmin = 0.05, fmax = 0.05, Nmaxinf = 10^10)
+function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence = 0.1, ϵT = 1.0, read_depth = 100.0, Nmax = 10^3, detectionlimit = 0.05, modelkern = 0.4, scalefactor = 6, ϵ1 = 10^6, mincellularity = 0.1, maxcellularity = 1.1, ρ = 0.0, maxclonalmutations = 10000.0, maxmu = 620.0, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), fmin = 0.05, fmax = 0.05, Nmaxinf = 10^10)
 
   #function to define priors, constants and create ABCSMC model type
 
@@ -151,7 +151,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
 
   priormu = [0.01, maxmu]
   priorcm = [0.0, Float64(maxclonalmutations)]
-  priorcellularity = [mincellularity, 1.1]
+  priorcellularity = [mincellularity, maxcellularity]
 
   #need to create Prior type which has a distribution type array with a corresponding distribution specific parameter array
   priorneutral = Prior([Uniform(priormu...),
@@ -243,6 +243,8 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `ploidy = 2`: ploidy of the genome
 - `d = 0.0`: Death rate of the thost population in the tumour
 - `b = log(2)`: Birth rate of the population. Default is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
+- `mincellularity = 0.1`: If some prior knowledge on cellularity is known this can be modifed
+- `maxcellularity = 1.1`: If some prior knowledge on cellularity is known this can be modifed
 ...
 """
 function fitABCmodels(data::Array{Float64, 1}, sname::String;
@@ -250,9 +252,9 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   fmax = 0.75, maxiterations = 10^4, maxclones = 2,
   nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
   progress = true, verbose = false, save = false,
-  ϵ1 = 10^6, mincellularity = 0.1, firstpass = false,
+  ϵ1 = 10^6, mincellularity = 0.1, maxcellularity = 1.1, firstpass = false,
   Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0,
-  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))
+  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), maxmu = 500, maxclonalmutations = 5000)
 
   #make output directories
   if save != false
@@ -298,6 +300,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     scalefactor = scalefactor,
     Nmax = Nmax,
     mincellularity = mincellularity,
+    maxcellularity = maxcellularity,
     maxclonalmutations = maxclonalmutations,
     maxmu = maxmu,
     timefunction = timefunction,
