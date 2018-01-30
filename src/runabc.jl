@@ -38,7 +38,7 @@ function tumourABCneutral(parameters, constants, targetdata)
                 d = cst[3],
                 b = cst[4],
                 ρ = cst[5],
-                Nmax = cst[6],
+                Nmax = 500,
                 timefunction = cst[7],
                 detectionlimit = cst[8],
                 s = Float64[],
@@ -238,7 +238,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `Nmaxinf = 10^10`: Scales selection coefficient value assuming the tumour size is Nmaxinf. Once value >10^9 has limited effect.
 - `scalefactor = 2`: Parameter for perturbation kernel for parameter values. Larger values means space will be explored more slowly but fewer particles will be perturbed outside prior range.
 - `ρ = 0.0`: Overdispersion parameter for beta-binomial model of sequencing data. ρ = 0.0 means model is binomial sampling
-- `adaptpriors = false`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set
+- `adaptpriors = false`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set, this is an experimental feature that needs further validation, although initial tests suggest it performs well and does not skew inferences
 - `timefunction = timefunc`: Function for KMC algorithm timestep. timefunc returns 1 meaning the timestep is the average of stochastic process. Alternatively timefuncrand can be specified which uses `-log(rand())` to increase the time step, so it is exponentially distributed rather than the mean of the exponential distribution.
 - `ploidy = 2`: ploidy of the genome
 - `d = 0.0`: Death rate of the thost population in the tumour
@@ -281,8 +281,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     maxmu = 1.5 * (length(data) / ((1/detectionlimit) - 1))
     maxclonalmutations = length(data)
     if verbose == true
-      println("Prior on μ: [0.0, $(maxmu)] ")
-      println("Prior on clonalmutations: [0.0, $(maxclonalmutations)] ")
+      #println("Prior on μ: [0.0, $(maxmu)] ")
+      #println("Prior on clonalmutations: [0.0, $(maxclonalmutations)] ")
     end
   end
 

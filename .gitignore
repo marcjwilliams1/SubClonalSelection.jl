@@ -9,3 +9,4 @@ example/example.jl
 example/otherdata/*
 /example/otherdata/*
 example/nikzainal/
+example/dpclustering.jl

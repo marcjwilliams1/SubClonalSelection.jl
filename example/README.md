@@ -1,6 +1,6 @@
 # SubClonalSelection
 
-This section will go through a few detailed examples of how a VAF distribution from bulk sequencing data is fitted using Approximate Bayesian Computation. We will go through 3 examples, 2 simulated datasets where the ground truth is known and a final example using data from Nik-Zainal et al. Cell 2012 which is presented in the paper in figure 3.
+This section will go through a few detailed examples of how a VAF distribution from bulk sequencing data is fitted using Approximate Bayesian Computation. We will go through 3 examples, 2 simulated datasets where the ground truth is known and a final example using data from Zhang et al. Science 2015 which is presented in the paper in figure 3.
 
 First I'll go through some of the basics of the package and the options available.
 
@@ -125,38 +125,3 @@ plothistogram(out, 1) #1 specified to only plot data from simulations of model 0
 plotparameterposterior(out, 1)
 ```
 ![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
-
-
-## Example 3
-For the final example we'll take some real data from Nik-Zainal et al Cell 2012 which is presented in figure 3 Williams et al 2018. We found that this data was most consistent with 2 subclones, which can be easily seen from the data.
-
-```julia
-out = fitABCmodels("example/nikzainal.txt",
-  "nikzainal",
-  read_depth = 180,
-  resultsdirectory = "",
-  nparticles = 100,
-  maxiterations = 2 * 10^5,
-  minreads = 7, # we observed that we could detect things above ~4% VAF
-  Nmax = 10^3,
-  maxclones = 2,
-  save = true,
-  firstpass = false,
-  verbose = true);
-```
-
-We'll now look at the results of the inference as before.
-```julia
-plotmodelposterior(out)
-```
-![plot](/example/nikzainal/plots/nikzainal-modelposterior.png)
-
-```julia
-plothistogram(out, 2) #2 specified to only plot data from simulations of model 0
-```
-![plot](/example/nikzainal/plots/nikzainal-histogram-2clone.png)
-
-```julia
-plotparameterposterior(out, 2)
-```
-![plot](/example/nikzainal/plots/nikzainal-posterior-2clone.png)
