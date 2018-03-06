@@ -223,6 +223,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 ## Arguments
 - `read_depth = 200.0`: Mean read depth of the target data set
 - `minreads = 5`: Minimum number of reads to identify a mutation
+- `minvaf = 0.0`: Minimum VAF to identify a mutation, will override minreads if > 0.0
 - `fmin = 0.01`: Minimum range of VAF to perform inference
 - `fmax = 0.75`: Maximum range of VAF to perform inference
 - `maxiterations = 10^4 `: Maximum number of iterations before ABC terminates
@@ -248,7 +249,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 ...
 """
 function fitABCmodels(data::Array{Float64, 1}, sname::String;
-  read_depth = 200.0, minreads = 5, fmin = 0.01,
+  read_depth = 200.0, minreads = 5, minvaf = 0.0, fmin = 0.01,
   fmax = 0.75, maxiterations = 10^4, maxclones = 2,
   nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
   progress = true, verbose = false, save = false,
@@ -263,6 +264,11 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   end
   #sequencing error is 1%, otherwise detection limit is controlled by minimum number of reads to call a variant
   detectionlimit = maximum([0.01, minreads/read_depth])
+  #if a hard cutoff for minvaf is specified detectionlimit is changed also changes fmin in this case as its assumed all mutations < minvaf have been removed
+  if minvaf > 0.0
+    detectionlimit = minvaf
+    fmin = minvaf
+  end
 
   targetdata, VAF = gettargetDF(data, fmin = fmin, fmax = fmax)
   targetdataCDF = targetdata
