@@ -91,6 +91,7 @@ For this second example  we'll take some synthetic data ("oneclone.txt") generat
 - Tumour population size: 10^6
 - Subclone frequency: 0.58
 - Fitness advantage: 1.03
+- # Mutations in subclone: 251
 - Time emerges (tumour doublings): 9.0
 
 As before we'll use ```fitABCmodels``` to attempt to recover these parameters as well as the correct number of subclones (1).

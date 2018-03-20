@@ -10,6 +10,7 @@ using GLM
 using Gadfly
 using Colors
 using StatsBase
+using Plots
 
 import Base.show, ApproxBayes.show
 

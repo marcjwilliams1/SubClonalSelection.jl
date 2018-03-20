@@ -36,4 +36,14 @@ println("\tChecking true parameters are within the 80% credible interval range..
 @test quantile(clonalmutations, 0.1) < 200.0 < quantile(clonalmutations, 0.9)
 @test quantile(cellularity, 0.1) < 0.8 < quantile(cellularity, 0.9)
 
+println("\tChecking plotting functions work and don't return errors...")
+plothistogram(out, 0)
+plothistogram(out, 1)
+plothistogram(out, 2)
+plotmodelposterior(out)
+plotparameterposterior(out, 0)
+plotparameterposterior(out, 1)
+plotparameterposterior(out, 2)
+
+
 println("All tests passed for single clone.")

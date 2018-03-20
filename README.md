@@ -8,11 +8,9 @@
 A Julia package for inferring the strength of selection from cancer sequencing data. Package simultaneously estimates the number of subclones in the population and their relative fitnesses. This is done by generating synthetic data by simulating different population dynamics (see [CancerSeqSim.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl)) and fitting this to data using Approximate Bayesian Computation (see [ApproxBayes.jl](https://github.com/marcjwilliams1/ApproxBayes.jl)).
 
 ## Getting Started
-Package works with [Julia](https://julialang.org/) versions above v0.5.1. If there any problems please report an issue.
-
 To download the package, once you're in a Julia session type the following command:
 ```julia
-Pkg.clone("https://github.com/marcjwilliams1/SubClonalSelection.jl")
+Pkg.add("SubClonalSelection.jl")
 ```
 
 Then once you are in a julia session the package can be loaded with
