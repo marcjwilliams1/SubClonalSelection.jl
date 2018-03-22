@@ -139,26 +139,6 @@ function collectoutput0clone(abcres)
   weight = weights)
 end
 
-function collectoutput(abcres, tend)
-
-    Nend = exp(tend*log.(2))
-
-    scmuts = map(x -> x.other[2], abcres.particles)
-    scdivs = map(x -> x.other[3], abcres.particles)
-    scfreq = map(x -> x.other[4], abcres.particles)
-
-    DF = DataFrame(mu = abcres.parameters[:, 1],
-    clonalmutations = abcres.parameters[:, 2],
-    freq = scfreq,
-    time = (1/(2*log.(2))) .* (scmuts./abcres.parameters[:, 1] ),
-    ndivs = scmuts./abcres.parameters[:, 1],
-    scmuts = map(x -> Float64(x), scmuts))
-
-    #euler gamma is a stochastic correction
-    DF[:s] = selection(log.(2), scfreq, (log.((1 - scfreq) * Nend)/log.(2) ) + (eulergamma/log.(2)), Array(DF[:time]))
-    return DF
-end
-
 function cumulativedistribution(VAF; fmin = 0.1, fmax = 0.3)
 
     #calculate cumulative sum
@@ -182,47 +162,6 @@ function cumulativedistribution(VAF; fmin = 0.1, fmax = 0.3)
     DF[:prediction] = predict(lmfit)
 
     return CancerSeqSim.AnalysedData(DF, VAF)
-end
-
-
-function averagehistogram(particles)
-
-    N = length(particles)
-
-    M = zeros(Int64, 100, N)
-    i = 1
-    for j in 1:N
-        M[:, i] = freqcounts = convert(Array, particles[i].other[1][:freq])
-        i = i + 1
-    end
-
-    mvalues = Float64[]
-    meanvalues = Float64[]
-    lquant = Float64[]
-    lquart = Float64[]
-    uquant = Float64[]
-    uquart = Float64[]
-    sd = Float64[]
-
-    for i in 1:size(M, 1)
-      push!(mvalues, median(vec(collect(M[i, :]'))))
-      push!(meanvalues, mean(vec(collect(M[i, :]'))))
-      push!(lquant, quantile(vec(collect(M[i, :]')), 0.025))
-      push!(uquant, quantile(vec(collect(M[i, :]')), 0.975))
-      push!(lquart, quantile(vec(collect(M[i, :]')), 0.25))
-      push!(uquart, quantile(vec(collect(M[i, :]')), 0.75))
-      push!(sd, std(vec(collect(M[i, :]'))))
-    end
-
-    DFr = DataFrame(median = mvalues,
-                    mean = meanvalues,
-                    lowerq = lquant,
-                    upperq = uquant,
-                    lowerquartile = lquart,
-                    upperquartile = uquart,
-                    sd = sd)
-
-    return DFr
 end
 
 function averagehistogram(particles, model, VAF)

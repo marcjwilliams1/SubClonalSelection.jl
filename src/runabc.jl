@@ -361,7 +361,7 @@ end
 If data is a string will read in file. File should be a 1 column text file with VAF values in the rows.
 """
 function fitABCmodels(data::String, sname::String;
-  read_depth = 200.0, minreads = 5, fmin = 0.01,
+  read_depth = 200.0, minreads = 5, fmin = 0.01, minvaf = 0.0,
   fmax = 0.75, maxiterations = 10^4, maxclones = 2,
   nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
   progress = true, verbose = false, save = false,
@@ -372,7 +372,7 @@ function fitABCmodels(data::String, sname::String;
   VAF = readdlm(data)[:, 1]
 
   return fitABCmodels(VAF, sname;
-  fmin = fmin, fmax = fmax, minreads = minreads,
+  fmin = fmin, fmax = fmax, minreads = minreads, minvaf = minvaf,
   read_depth = read_depth, maxiterations = maxiterations,
   maxclones = maxclones, nparticles = nparticles,
   Nmax = Nmax, resultsdirectory = resultsdirectory,

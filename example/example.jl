@@ -7,8 +7,7 @@ srand(1)
   read_depth = 300,
   resultsdirectory = "example/",
   nparticles = 100,
-  maxiterations = 5*10^5,
-  Nmax = 2^12,
+  maxiterations = 10^5,
   maxclones = 1,
   save = true,
   adaptpriors = true,
@@ -128,17 +127,16 @@ srand(123)
   read_depth = 150,
   resultsdirectory = "example/otherdata/",
   nparticles = 100,
-  maxiterations = 5*10^5,
-  Nmax = 2^12,
+  maxiterations = 10^5,
   maxclones = 2,
   ρ = 0.005,
   save = true,
-  adaptpriors = false,
+  adaptpriors = true,
   verbose = true,
   Nmaxinf = 10^10,
-  minreads = round(Int64, 150*0.04),
+  minvaf = 0.04,
   mincellularity = 0.95,
-  fmin = 0.05);
+  fmin = 0.04);
 saveallplots(out, resultsdirectory = "example/otherdata/")
 
 srand(1)
@@ -187,7 +185,8 @@ srand(123)
   resultsdirectory = "example/",
   nparticles = 100,
   maxiterations = 2*10^5,
-  minreads = 6,
+  minvaf = 0.04,
+  adaptpriors = true,
   maxclones = 2,
   save = true);
 saveallplots(out, resultsdirectory = "example/")
