@@ -26,10 +26,10 @@ An analysis is performed with the ```fitABCmodels``` function that takes as inpu
 - `Nmaxinf = 10^10`: Scales selection coefficient value assuming the tumour size is Nmaxinf. Once value >10^9 has limited effect.
 - `scalefactor = 2`: Parameter for perturbation kernel for parameter values. Larger values means space will be explored more slowly but fewer particles will be perturbed outside prior range.
 - `ρ = 0.0`: Overdispersion parameter for beta-binomial model of sequencing data. ρ = 0.0 means model is binomial sampling
-- `adaptpriors = false`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set
+- `adaptpriors = false`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set. This is an experimental feature that needs further validation, although initial tests suggest it performs well and does not skew inferences. To run the inference with default priors as described in the paper keep this to false.
 - `timefunction = timefunc`: Function for KMC algorithm timestep. timefunc returns 1 meaning the timestep is the average of stochastic process. Alternatively timefuncrand can be specified which uses `-log(rand())` to increase the time step, so it is exponentially distributed rather than the mean of the exponential distribution.
 - `ploidy = 2`: ploidy of the genome
-- `d = 0.0`: Death rate of the thost population in the tumour
+- `d = 0.0`: Death rate of the host population in the tumour, we would advise keeping this to 0.0 as it is only μ/β that can be inferred. That is differences in the death rate are unidentifiable in this framework.
 - `b = log(2)`: Birth rate of the population. Default is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
 
 ## Example 1 - Neutral synthetic data
@@ -126,3 +126,49 @@ plothistogram(out, 1) #1 specified to only plot data from simulations of model 0
 plotparameterposterior(out, 1)
 ```
 ![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
+
+## Example 3 - Lung cancer sample
+This is an example from data we presented in the paper in figure 3C, for this sample we found evidence for one subclone. We measured the overdispersion parameter of this data to be 0.005 which we can input into the inference algorithm. This data has also been corrected for the purity of the sample so we constrain this in our inference (it is still adviseable to give this a bit of freedom, hence we set the lower limit to 0.95). We also notice the mode of the lower peak ~ 0.04 so we set minvaf to this number.
+
+```julia
+out = fitABCmodels("example/4990-12.txt",
+         "4990-12",
+         read_depth = 150,
+         resultsdirectory = "example/",
+         nparticles = 100,
+         maxiterations = 5*10^4,
+         maxclones = 1,
+         ρ = 0.005, #overdispersion parameter
+         save = true,
+         adaptpriors = true,
+         verbose = true,
+         Nmaxinf = 10^10,
+         minvaf = 0.04,
+         mincellularity = 0.95,
+         fmin = 0.04);
+```
+
+First we can see that our model can accurately fit the data.
+```julia
+plothistogram(out, 1) #1 specified to only plot data from simulations of model 0
+```
+![plot](/example/4990-12/plots/4990-12-histogram-1clone.png)
+
+And secondly that the 1 clone model is favoured as we found in the paper.
+```julia
+plotmodelposterior(out)
+```
+![plot](/example/4990-12/plots/4990-12-modelposterior.png)
+
+Finally we can plot the inferred parameters from the model.
+```julia
+plotparameterposterior(out, 1)
+```
+![plot](/example/4990-12/plots/4990-12-posterior-1clone.png)
+
+### Notes
+We note that in these examples above we have used a limited number of particles and a limited number of iterations to what would normally be recommended and what was used in the paper, we used these examples as it should be feasible to run them on a laptop in <30 minutes or so and as should be apparent the results are relatively good. Nonetheless in general we would recommend running the algorithm with 500 particles/samples and for a minimum of 10^6 iterations which is computationally expensive and hence is best suited to a HPC of some sort. Note that the inferences improve with increasing the number of iterations as the error between the target data set and the simulated datasets decreases. This is particularly relevant when considering up to 2 subclones (here the search space is large) and a large number of iterations is required to correctly identify samples with 2 subclones and their corresponding parameters. In summary we would recommend running a minimum of 10^6 iterations per sample.
+
+Also note that the reported mutation rate is the effective mutation rate per tumour doubling. If you want to convert this to a quantity in terms of the per bp per tumour doubling you'll need to divide this number by the size of the target that was sequenced (eg ~ 30*10^6 for WXS).
+
+There are plans to parallelise the algorithm in future which should help the speed.
