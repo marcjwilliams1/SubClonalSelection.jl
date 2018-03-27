@@ -2,53 +2,70 @@ using SubClonalSelection
 
 srand(123)
 #5509 seconds
-@time out = fitABCmodels("example/oneclone.txt",
+@time out1 = fitABCmodels("example/oneclone.txt",
   "oneclone",
   read_depth = 300,
   resultsdirectory = "example/",
   nparticles = 100,
-  maxiterations = 10^4,
+  ρ = 0.005,
+  maxiterations = 10^3,
+  maxclones = 1,
+  save = true,
+  adaptpriors = true,
+  verbose = false,
+  progress = false,
+  Nmaxinf = 10^6,
+  fmin = 0.01);
+
+
+srand(123)
+#5509 seconds
+@time out1 = fitABCmodels("example/oneclone.txt",
+  "oneclone",
+  read_depth = 300,
+  resultsdirectory = "example/",
+  nparticles = 100,
+  maxiterations = 3*10^4,
   maxclones = 1,
   save = true,
   adaptpriors = true,
   verbose = true,
   Nmaxinf = 10^6,
   fmin = 0.01);
-saveallplots(out, resultsdirectory = "example/")
+saveallplots(out1, resultsdirectory = "example/")
 
 srand(123)
 #3379 seconds
-@time out = fitABCmodels("example/neutral.txt",
+@time out2 = fitABCmodels("example/neutral.txt",
   "neutral",
   read_depth = 300,
   resultsdirectory = "example/",
   nparticles = 100,
-  maxiterations = 10^4,
+  maxiterations = 3*10^4,
   maxclones = 1,
   save = true,
   adaptpriors = true,
   verbose = true,
   Nmaxinf = 10^6,
   fmin = 0.01);
-saveallplots(out, resultsdirectory = "example/")
+saveallplots(out2, resultsdirectory = "example/")
 
 srand(123)
-@time out = fitABCmodels("example/4990-12/data/4990-12.txt",
+@time out3 = fitABCmodels("example/4990-12/data/4990-12.txt",
   "4990-12",
   read_depth = 150,
   resultsdirectory = "example/",
   nparticles = 100,
-  maxiterations = 10^4,
-  maxclones = 1,
+  maxiterations = 3*10^4,
+  maxclones = 2,
   ρ = 0.005,
   save = true,
   adaptpriors = true,
   verbose = true,
   Nmaxinf = 10^10,
-  minvaf = 0.04,
-  mincellularity = 0.95,
-  fmin = 0.04);
-saveallplots(out, resultsdirectory = "example/otherdata/")
+  minvaf = 0.04, #minimum vaf to resolve mutations, can be seen from lower peak
+  mincellularity = 0.95);
+saveallplots(out3, resultsdirectory = "example/")
 
 
 srand(1)

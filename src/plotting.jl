@@ -45,14 +45,14 @@ function plotparameterposterior(res, model = 1)
 
     if model == 0
         model = model + 1
-        Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:3], nbins = 20, layout = 3,
+        Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:3], nbins = 20, layout = 3, weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "Cellularity"],
         linecolor = :white, fillcolor = RGBA(0.75, 0.3, 0.3),
         markerstrokecolor=:white, titlefont = font(12, "Calibri"), ytickfont = font(10, "Calibri"), xtickfont = font(10, "Calibri"), legend = false)
     elseif model == 1
         model = model + 1
         Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:7],
-        nbins = 20, layout = 7,
+        nbins = 20, layout = 7,weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "s" "t" "Cellularity" "Subclone frequency" "# Mutations in subclone"],
         linecolor = :white, fillcolor = RGBA(0.75, 0.3, 0.3),
         markerstrokecolor=:white, titlefont = font(12, "Calibri"),
@@ -60,7 +60,7 @@ function plotparameterposterior(res, model = 1)
     elseif model == 2
         model = model + 1
         Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:11],
-        nbins = 20, layout = 11,
+        nbins = 20, layout = 11,weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "s1" "t1" "s2" "t2" "Cellularity" "Subclone 1 frequency" "Subclone 2 frequency" "# Mutations in \nsubclone 1" "# Mutations in subclone 2"],
         linecolor = :white, titlefont = font(12, "Calibri"),xtickfont = font(10, "Calibri"), ytickfont = font(10, "Calibri"), fillcolor = RGBA(0.75, 0.3, 0.3), legend = false)
     end
@@ -74,15 +74,15 @@ function saveallplots(res; resultsdirectory = "output")
   makedirectory(resultsdirectory)
   makeplotsdirectories(dir)
   p = plotmodelposterior(res)
-  savefig(joinpath(dir, "plots", "$(sname)-modelposterior.png"))
+  savefig(joinpath(dir, "plots", "$(sname)-modelposterior.pdf"))
 
   model = 0
   for post in res.Posterior
     if post.Probability > 0.0
       p = plothistogram(res, model)
-      savefig(joinpath(dir, "plots", "$(sname)-histogram-$(model)clone.png"))
+      savefig(joinpath(dir, "plots", "$(sname)-histogram-$(model)clone.pdf"))
       p = plotparameterposterior(res, model);
-      savefig(joinpath(dir, "plots", "$(sname)-posterior-$(model)clone.png"))
+      savefig(joinpath(dir, "plots", "$(sname)-posterior-$(model)clone.pdf"))
     end
     model = model + 1
   end

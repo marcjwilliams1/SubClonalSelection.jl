@@ -264,7 +264,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   end
   #sequencing error is 1%, otherwise detection limit is controlled by minimum number of reads to call a variant
   detectionlimit = maximum([0.01, minreads/read_depth])
-  #if a hard cutoff for minvaf is specified detectionlimit is changed also changes fmin in this case as its assumed all mutations < minvaf have been removed
+
+  #if a hard cutoff for minvaf is specified detectionlimit is changed also changes fmin in this case as its assumed all mutations < minvaf have been removed or shouldn't be used
   if minvaf > 0.0
     detectionlimit = minvaf
     fmin = minvaf
@@ -282,18 +283,14 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
 
   #adaptively set priors on μ and clonalmutations based on number of mutations
   # two extreme cases are mutations are all subclonal which defines a maximum mu,
-  #or mutations are all clonal hich defines a maximum here
+  #or mutations are all clonal hich defines a maximum clonalmutational load
   if adaptpriors == true
     maxmu = 1.5 * (length(data) / ((1/detectionlimit) - 1))
     maxclonalmutations = length(data)
-    if verbose == true
-      #println("Prior on μ: [0.0, $(maxmu)] ")
-      #println("Prior on clonalmutations: [0.0, $(maxclonalmutations)] ")
-    end
   end
 
   nparts = nparticles
-  if (firstpass == true) && (length(VAF) < 3000)
+  if (firstpass == true) && (length(VAF) < 3000) #I found this not to be useful when number of mutations is large
     println("################################################")
     println("Running first pass to get starting point for ABC")
     println("################################################")

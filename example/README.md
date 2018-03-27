@@ -68,19 +68,19 @@ This may take ~30-60 minutes on a desktop computer. With this output we can then
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/example/neutral/plots/neutral-modelposterior.png)
+![plot](/example/neutral/plots/neutral-modelposterior.pdf)
 
 We can visually inspect how well this model fits the data by overlaying a summary (mean and 95% credible intervals) of the VAF data from simulations that were accepted on top of the target data set.
 Plot the histogram for model 2.
 ```julia
 plothistogram(out, 0) #0 specified to only plot data from simulations of model 0
 ```
-![plot](/example/neutral/plots/neutral-histogram-0clone.png)
+![plot](/example/neutral/plots/neutral-histogram-0clone.pdf)
 Finally we can plot the posterior distributions of the parameters and check whether we have correctly identified the true parameters. As would be hoped in this case the mode of the posteriors do indeed closely match the true input parameters.
 ```julia
 plotparameterposterior(out, 0)
 ```
-![plot](/example/neutral/plots/neutral-posterior-0clone.png)
+![plot](/example/neutral/plots/neutral-posterior-0clone.pdf)
 
 
 ## Example 2 - Synthetic data with 1 subclone
@@ -117,17 +117,17 @@ As in the neutral example we can confirm we recover the input number of subclone
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/example/oneclone/plots/oneclone-modelposterior.png)
+![plot](/example/oneclone/plots/oneclone-modelposterior.pdf)
 
 ```julia
 plothistogram(out, 1) #1 specified to only plot data from simulations of model 0
 ```
-![plot](/example/oneclone/plots/oneclone-histogram-1clone.png)
+![plot](/example/oneclone/plots/oneclone-histogram-1clone.pdf)
 
 ```julia
 plotparameterposterior(out, 1)
 ```
-![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
+![plot](/example/oneclone/plots/oneclone-posterior-1clone.pdf)
 
 ## Example 3 - Lung cancer sample
 This is an example from data we presented in the paper in figure 3C, for this sample we found evidence for one subclone. We measured the overdispersion parameter of this data to be 0.005 which we can input into the inference algorithm. This data has also been corrected for the purity of the sample so we constrain this in our inference (it is still adviseable to give this a bit of freedom, hence we set the lower limit to 0.95). We also notice the mode of the lower peak ~ 0.04 so we set minvaf to this number.
@@ -154,22 +154,22 @@ First we can see that our model can accurately fit the data.
 ```julia
 plothistogram(out, 1) #1 specified to only plot data from simulations of model 0
 ```
-![plot](/example/4990-12/plots/4990-12-histogram-1clone.png)
+![plot](/example/4990-12/plots/4990-12-histogram-1clone.pdf)
 
 And secondly that the 1 clone model is favoured as we found in the paper.
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/example/4990-12/plots/4990-12-modelposterior.png)
+![plot](/example/4990-12/plots/4990-12-modelposterior.pdf)
 
 Finally we can plot the inferred parameters from the model.
 ```julia
 plotparameterposterior(out, 1)
 ```
-![plot](/example/4990-12/plots/4990-12-posterior-1clone.png)
+![plot](/example/4990-12/plots/4990-12-posterior-1clone.pdf)
 
 ### Notes
-We note that in these examples above we have used a limited number of particles and a limited number of iterations to what would normally be recommended and what was used in the paper, we used these examples as it should be feasible to run them on a laptop in <30 minutes or so and as should be apparent the results are relatively good. Nonetheless in general we would recommend running the algorithm with 500 particles/samples and for a minimum of 10^6 iterations which is computationally expensive and hence is best suited to a HPC of some sort. Note that the inferences improve with increasing the number of iterations as the error between the target data set and the simulated datasets decreases. This is particularly relevant when considering up to 2 subclones (here the search space is large) and a large number of iterations is required to correctly identify samples with 2 subclones and their corresponding parameters. In summary we would recommend running a minimum of 10^6 iterations per sample.
+We note that in these examples above we have used a limited number of particles and a limited number of iterations to what would normally be recommended and what was used in the paper, we used these examples as it should be feasible to run them on a laptop in <30 minutes or so and as should be apparent the results are relatively good. Nonetheless in general we would recommend running the algorithm with 500 particles/samples and for a minimum of 10^6 iterations which is computationally expensive and hence is best suited to a HPC of some sort. Note that the inferences improve with increasing the number of iterations as the error between the target data set and the simulated datasets decreases. This is particularly relevant when considering up to 2 subclones (here the search space is large) and a large number of iterations is required to correctly identify samples with 2 subclones and their corresponding parameters.
 
 Also note that the reported mutation rate is the effective mutation rate per tumour doubling. If you want to convert this to a quantity in terms of the per bp per tumour doubling you'll need to divide this number by the size of the target that was sequenced (eg ~ 30*10^6 for WXS).
 

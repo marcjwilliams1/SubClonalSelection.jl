@@ -10,7 +10,7 @@ A Julia package for inferring the strength of selection from cancer sequencing d
 ## Getting Started
 To download the package, once you're in a Julia session type the following command:
 ```julia
-Pkg.add("SubClonalSelection.jl")
+Pkg.clone("https://github.com/marcjwilliams1/SubClonalSelection.jl")
 ```
 
 Then once you are in a julia session the package can be loaded with
@@ -44,19 +44,19 @@ Plot the posterior model probabilities.
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/example/oneclone/plots/oneclone-modelposterior.png)
+![plot](/example/oneclone/plots/oneclone-modelposterior.pdf)
 
 Plot the histogram for model 2.
 ```julia
 plothistogram(out, 1)
 ```
-![plot](/example/oneclone/plots/oneclone-histogram-1clone.png)
+![plot](/example/oneclone/plots/oneclone-histogram-1clone.pdf)
 
 Plot the posterior parameter distribution for model 2.
 ```julia
 plotparameterposterior(out, 1)
 ```
-![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
+![plot](/example/oneclone/plots/oneclone-posterior-1clone.pdf)
 
 Note the ground truth of the parameters in this case are:
 ```julia
