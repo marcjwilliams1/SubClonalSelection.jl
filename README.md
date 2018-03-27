@@ -44,30 +44,32 @@ Plot the posterior model probabilities.
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/example/oneclone/plots/oneclone-modelposterior.pdf)
+![plot](/example/oneclone/plots/oneclone-modelposterior.png)
 
 Plot the histogram for model 2.
 ```julia
 plothistogram(out, 1)
 ```
-![plot](/example/oneclone/plots/oneclone-histogram-1clone.pdf)
+![plot](/example/oneclone/plots/oneclone-histogram-1clone.png)
 
 Plot the posterior parameter distribution for model 2.
 ```julia
 plotparameterposterior(out, 1)
 ```
-![plot](/example/oneclone/plots/oneclone-posterior-1clone.pdf)
+![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
 
 Note the ground truth of the parameters in this case are:
-```julia
-  mu = 20.0
-  clonalmutations = 300
-  s = 1.03
-  t = 9.0
-  cellularity = 0.7
-  freq = 0.58
-  scmuts = 251
-```
+
+- Mutation rate: 20.0
+- Number of clonal mutations: 300
+- Number of subclones: 1
+- Cellularity: 0.7
+- Tumour population size: 10^6
+- Subclone frequency: 0.58
+- Fitness advantage: 1.03
+- Mutations in subclone: 251
+- Time emerges (tumour doublings): 9.0
+- Read depth: 300X
 
 Finally we can also save all plots and text files with posterior distributions to a directory, unless specified the default will be to create a file a directory called ```output``` in the current working directory.
 

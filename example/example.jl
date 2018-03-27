@@ -32,7 +32,7 @@ srand(123)
   verbose = true,
   Nmaxinf = 10^6,
   fmin = 0.01);
-saveallplots(out1, resultsdirectory = "example/")
+saveallplots(out1, resultsdirectory = "example/", outputformat = ".png")
 
 srand(123)
 #3379 seconds
@@ -48,7 +48,7 @@ srand(123)
   verbose = true,
   Nmaxinf = 10^6,
   fmin = 0.01);
-saveallplots(out2, resultsdirectory = "example/")
+saveallplots(out2, resultsdirectory = "example/", outputformat = ".png")
 
 srand(123)
 @time out3 = fitABCmodels("example/4990-12/data/4990-12.txt",
@@ -65,7 +65,7 @@ srand(123)
   Nmaxinf = 10^10,
   minvaf = 0.04, #minimum vaf to resolve mutations, can be seen from lower peak
   mincellularity = 0.95);
-saveallplots(out3, resultsdirectory = "example/")
+saveallplots(out3, resultsdirectory = "example/", outputformat = ".png")
 
 
 srand(1)

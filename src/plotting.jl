@@ -67,22 +67,32 @@ function plotparameterposterior(res, model = 1)
 
 end
 
-function saveallplots(res; resultsdirectory = "output")
+"""
+    saveallplots(res; <keyword arguments>)
+
+Create and save all plots. For each model, the VAF histogram with model results overlayed is plotted as is the posterior distributions for parameters and models. Function takes a fitABCmodels output type.
+...
+## Arguments
+- `resultsdirectory = "output"`: Directory to save the plots.
+- `outputformat = ".pdf"`: Format to save the plots as. Default is pdf, other common formats are available such png etc.
+...
+"""
+function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf")
 
   sname = res.SampleName
   dir = joinpath(resultsdirectory, res.SampleName)
   makedirectory(resultsdirectory)
   makeplotsdirectories(dir)
   p = plotmodelposterior(res)
-  savefig(joinpath(dir, "plots", "$(sname)-modelposterior.pdf"))
+  savefig(joinpath(dir, "plots", "$(sname)-modelposterior$(outputformat)"))
 
   model = 0
   for post in res.Posterior
     if post.Probability > 0.0
       p = plothistogram(res, model)
-      savefig(joinpath(dir, "plots", "$(sname)-histogram-$(model)clone.pdf"))
+      savefig(joinpath(dir, "plots", "$(sname)-histogram-$(model)clone$(outputformat)"))
       p = plotparameterposterior(res, model);
-      savefig(joinpath(dir, "plots", "$(sname)-posterior-$(model)clone.pdf"))
+      savefig(joinpath(dir, "plots", "$(sname)-posterior-$(model)clone$(outputformat)"))
     end
     model = model + 1
   end
