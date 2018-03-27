@@ -9,13 +9,14 @@ srand(1)
 out = fitABCmodels("data/neutral.txt",
   "neutral",
   read_depth = 150,
-  resultsdirectory = "example",
+  resultsdirectory = "output",
   nparticles = 100,
   maxiterations = 10^4,
   Nmax = 10^3,
   maxclones = 1,
   firstpass = false,
-  progress = true);
+  progress = true,
+  save = true);
 
 # check if we get the correct model
 println("")
@@ -32,5 +33,11 @@ println("\tChecking true parameters are within the 80% credible interval range..
 @test quantile(mu, 0.1) < 20.0 < quantile(mu, 0.9)
 @test quantile(clonalmutations, 0.1) < 200.0 < quantile(clonalmutations, 0.9)
 @test quantile(cellularity, 0.1) < 0.7 < quantile(cellularity, 0.9)
+
+println("\tChecking plotting functions work and are saved...")
+saveallplots(out)
+@test isfile("output/neutral/plots/neutral-histogram-0clone.png")
+@test isfile("output/neutral/posterior/neutral-histogram-clone0.csv")
+rm("output", recursive = true)
 
 println("All tests passed for neutral simulated data.")

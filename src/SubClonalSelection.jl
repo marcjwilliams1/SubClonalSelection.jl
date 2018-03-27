@@ -7,7 +7,6 @@ using ApproxBayes
 using Distributions
 using Distances
 using GLM
-using Gadfly
 using Colors
 using StatsBase
 using Plots

@@ -1,13 +1,13 @@
 using SubClonalSelection
 
-srand(1)
+srand(123)
 #5509 seconds
 @time out = fitABCmodels("example/oneclone.txt",
   "oneclone",
   read_depth = 300,
   resultsdirectory = "example/",
   nparticles = 100,
-  maxiterations = 10^5,
+  maxiterations = 10^4,
   maxclones = 1,
   save = true,
   adaptpriors = true,
@@ -15,6 +15,40 @@ srand(1)
   Nmaxinf = 10^6,
   fmin = 0.01);
 saveallplots(out, resultsdirectory = "example/")
+
+srand(123)
+#3379 seconds
+@time out = fitABCmodels("example/neutral.txt",
+  "neutral",
+  read_depth = 300,
+  resultsdirectory = "example/",
+  nparticles = 100,
+  maxiterations = 10^4,
+  maxclones = 1,
+  save = true,
+  adaptpriors = true,
+  verbose = true,
+  Nmaxinf = 10^6,
+  fmin = 0.01);
+saveallplots(out, resultsdirectory = "example/")
+
+srand(123)
+@time out = fitABCmodels("example/4990-12/data/4990-12.txt",
+  "4990-12",
+  read_depth = 150,
+  resultsdirectory = "example/",
+  nparticles = 100,
+  maxiterations = 10^4,
+  maxclones = 1,
+  ρ = 0.005,
+  save = true,
+  adaptpriors = true,
+  verbose = true,
+  Nmaxinf = 10^10,
+  minvaf = 0.04,
+  mincellularity = 0.95,
+  fmin = 0.04);
+saveallplots(out, resultsdirectory = "example/otherdata/")
 
 
 srand(1)
@@ -190,12 +224,3 @@ srand(123)
   maxclones = 2,
   save = true);
 saveallplots(out, resultsdirectory = "example/")
-
-
-ind=map(x->x.model, out.ABCresults.particles).==3
-p = out.ABCresults.particles[ind]
-DF = p[10].other[1]
-
-using Gadfly
-plot(DF, x = :VAF, y = :freq, Geom.bar,
-Theme(default_color = RGBA(0.5, 0.5, 0.5, 0.8)))

@@ -39,6 +39,7 @@ For the first example we'll take some synthetic data ("neutral.txt") generated f
 - Number of subclones: 0 (ie neutral)
 - Cellularity: 0.7
 - Tumour population size: 10^6
+- Read depth: 300X
 
 First we'll load the packages that we need.
 ```julia
@@ -51,7 +52,7 @@ We'll now use ```fitABCmodels``` from ```SubClonalSelection``` to attempt to rec
 ```julia
 out = fitABCmodels("example/neutral.txt", # text file with data
   "neutral", # sample name
-  read_depth = 150,
+  read_depth = 300,
   resultsdirectory = "", #use this directory
   nparticles = 100,
   maxiterations = 2 * 10^5,
@@ -91,15 +92,16 @@ For this second example  we'll take some synthetic data ("oneclone.txt") generat
 - Tumour population size: 10^6
 - Subclone frequency: 0.58
 - Fitness advantage: 1.03
-- # Mutations in subclone: 251
+- Mutations in subclone: 251
 - Time emerges (tumour doublings): 9.0
+- Read depth: 300X
 
 As before we'll use ```fitABCmodels``` to attempt to recover these parameters as well as the correct number of subclones (1).
 
 ```julia
 out = fitABCmodels("example/oneclone.txt", # text file with data
   "oneclone", # sample name
-  read_depth = 150,
+  read_depth = 300,
   resultsdirectory = "", #use this directory
   nparticles = 100,
   maxiterations = 2 * 10^5,

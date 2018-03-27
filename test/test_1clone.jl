@@ -9,13 +9,14 @@ srand(1)
 out = fitABCmodels("data/oneclone.txt",
   "oneclone",
   read_depth = 150,
-  resultsdirectory = "example",
+  resultsdirectory = "output",
   nparticles = 100,
   maxiterations =  10^4,
   Nmax = 10^3,
   maxclones = 2,
   verbose = true,
   firstpass = false,
+  save = true,
   progress = true);
 
 # check if we get the correct model
@@ -36,14 +37,11 @@ println("\tChecking true parameters are within the 80% credible interval range..
 @test quantile(clonalmutations, 0.1) < 200.0 < quantile(clonalmutations, 0.9)
 @test quantile(cellularity, 0.1) < 0.8 < quantile(cellularity, 0.9)
 
-println("\tChecking plotting functions work and don't return errors...")
-plothistogram(out, 0)
-plothistogram(out, 1)
-plothistogram(out, 2)
-plotmodelposterior(out)
-plotparameterposterior(out, 0)
-plotparameterposterior(out, 1)
-plotparameterposterior(out, 2)
+println("\tChecking plotting functions work and are saved...")
+saveallplots(out)
+@test isfile("output/oneclone/plots/oneclone-histogram-0clone.png")
+@test isfile("output/oneclone/posterior/oneclone-histogram-clone0.csv")
+rm("output", recursive = true)
 
 
 println("All tests passed for single clone.")

@@ -226,10 +226,10 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `minvaf = 0.0`: Minimum VAF to identify a mutation, will override minreads if > 0.0
 - `fmin = 0.01`: Minimum range of VAF to perform inference
 - `fmax = 0.75`: Maximum range of VAF to perform inference
-- `maxiterations = 10^4 `: Maximum number of iterations before ABC terminates
+- `maxiterations = 10^6`: Maximum number of iterations before ABC terminates
 - `maxclones = 2`: Maximum number of clones, can be 1 or 2
 - `nparticles = 500`: Number of particles (ie samples) in the ABC output
-- `Nmax = 10^4`: Maximum population size used to fit data, increase if suspect that there is a late arising clone
+- `Nmax = 10^4`: Maximum population size used to fit data, increase if suspect that there is a late arising subclone that dominates the distribution
 - `resultsdirectory = "output" `: Directory where posterior distributions will be saved to, this directory will be created if it does not already exist.
 - `progress = true`: Show progress of ABC sampler with `ProgressMeter` package
 - `verbose = true`: Print out summary at each ABC population step.

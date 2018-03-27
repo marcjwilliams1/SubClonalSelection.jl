@@ -1,34 +1,44 @@
-function plothistogram(res, model = 0)
+function plothistogram(res, model = 0; removelowfrequencies = true)
+
+  if removelowfrequencies == true
+      dl = res.ABCsetup.Models[1].constants[8]
+  else
+      dl = 0.0
+  end
 
   model = model + 1
+
   DFres = res.Posterior[model].MeanHistogram
   DFres[:VAF] = collect(0.01:0.01:1.0)
   DF = DataFrame(VAF = res.VAF)
   DFres = DFres[1:75, :]
+  DFres = DFres[DFres[:VAF].>=dl, :]
 
-  l1 = layer(DFres, x = :VAF, y = :mean, ymin = :lowerq95, ymax = :upperq95, Geom.line, Geom.ribbon,
-  Theme(line_width = 0.06cm, default_color = RGBA(0.75, 0.3, 0.3),
-  lowlight_color=c->RGBA{Float32}(c.r, c.g, c.b, 0.5)))
-  l2 = layer(DFres, x = :VAF, y = :truecounts, Geom.bar,
-  Theme(default_color = RGBA(0.5, 0.5, 0.5, 0.8),
-  major_label_font_size = 16pt,
-  minor_label_font_size = 12pt))
+  if model - 1 == 0
+      postcolor = RGBA(0.0, 76/255, 153/255) # plot neutral in blue and selection in red as in paper
+  else
+      postcolor = RGBA(0.75, 0.3, 0.3)
+  end
 
-  myplot = Gadfly.plot(l1, l2,
-  Guide.xlabel("VAF"),
-  Guide.ylabel("Counts"))
+  bar(DFres[:VAF], DFres[:truecounts], linecolor = RGBA(0.431, 0.431, 0.431, 0.9),
+  fillcolor = RGBA(0.431, 0.431, 0.431, 0.9))
+  plot!(DFres[:VAF], DFres[:mean], color = postcolor, w = 2)
+  plot!(DFres[:VAF], DFres[:upperq95], fillrange = DFres[:lowerq95],
+               fillalpha = 0.5,
+               fillcolor = postcolor, linecolor = false,
+               markerstrokecolor=:white, titlefont = font(12, "Calibri"), ytickfont = font(10, "Calibri"), xtickfont = font(10, "Calibri"), legend = false, grid = false,
+               yaxis = ("Counts"), xaxis = ("VAF"))
 
-  return myplot
 end
 
 function plotmodelposterior(res)
-    p = Gadfly.plot(res.ModelProb, x=:Model, y = :Probability, Geom.bar,
-    Theme(bar_spacing = 0.2cm,
-    default_color = RGBA(0.5, 0.5, 0.5, 0.8),
-    major_label_font_size = 16pt,
-    minor_label_font_size = 12pt))
 
-    return p
+    DF = DataFrame(Model = map(x -> "$x", res.ModelProb[:Model]), Probability = res.ModelProb[:Probability])
+
+    Plots.bar(DF[:Model], DF[:Probability],
+    title="Model Probabilities", yaxis = ("Probability"), xaxis = ("# Number of subclones"),
+    linecolor = :white, fillcolor = RGBA(0.5, 0.5, 0.5, 0.8),
+    markerstrokecolor=:white, titlefont = font(14, "Calibri"), ytickfont = font(12, "Calibri"), xtickfont = font(12, "Calibri"), legend = false, grid = false)
 end
 
 function plotparameterposterior(res, model = 1)
@@ -64,15 +74,15 @@ function saveallplots(res; resultsdirectory = "output")
   makedirectory(resultsdirectory)
   makeplotsdirectories(dir)
   p = plotmodelposterior(res)
-  draw(PNG(joinpath(dir, "plots", "$(sname)-modelposterior.png"), 4inch, 3inch), p)
+  savefig(joinpath(dir, "plots", "$(sname)-modelposterior.png"))
 
   model = 0
   for post in res.Posterior
     if post.Probability > 0.0
       p = plothistogram(res, model)
-      draw(PNG(joinpath(dir, "plots", "$(sname)-histogram-$(model)clone.png"), 4inch, 3inch), p)
+      savefig(joinpath(dir, "plots", "$(sname)-histogram-$(model)clone.png"))
       p = plotparameterposterior(res, model);
-      savefig(p, joinpath(dir, "plots", "$(sname)-posterior-$(model)clone.png"))
+      savefig(joinpath(dir, "plots", "$(sname)-posterior-$(model)clone.png"))
     end
     model = model + 1
   end
