@@ -39,7 +39,7 @@ println("\tChecking true parameters are within the 80% credible interval range..
 
 println("\tChecking plotting functions work and are saved...")
 saveallplots(out)
-@test isfile("output/oneclone/plots/oneclone-histogram-0clone.png")
+@test isfile("output/oneclone/plots/oneclone-histogram-0clone.pdf")
 @test isfile("output/oneclone/posterior/oneclone-histogram-clone0.csv")
 rm("output", recursive = true)
 

@@ -36,7 +36,7 @@ println("\tChecking true parameters are within the 80% credible interval range..
 
 println("\tChecking plotting functions work and are saved...")
 saveallplots(out)
-@test isfile("output/neutral/plots/neutral-histogram-0clone.png")
+@test isfile("output/neutral/plots/neutral-histogram-0clone.pdf")
 @test isfile("output/neutral/posterior/neutral-histogram-clone0.csv")
 rm("output", recursive = true)
 
