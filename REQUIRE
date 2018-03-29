@@ -1,7 +1,8 @@
-julia 0.5
+julia 0.6
 DataFrames
 Distributions
 Distances
 GLM
 Colors
 Plots
+ApproxBayes
