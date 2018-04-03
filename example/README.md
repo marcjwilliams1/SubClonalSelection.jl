@@ -50,18 +50,19 @@ using DataFrames
 We'll now use ```fitABCmodels``` from ```SubClonalSelection``` to attempt to recover these parameters as well as the number of subclones.
 
 ```julia
-out = fitABCmodels("example/neutral.txt", # text file with data
-  "neutral", # sample name
-  read_depth = 300,
-  resultsdirectory = "", #use this directory
-  nparticles = 100,
-  maxiterations = 2 * 10^5,
-  Nmax = 10^3,
-  maxclones = 2,
-  save = true,
-  firstpass = false,
-  verbose = true,
-  Nmaxinf = 10^6);
+srand(123)
+out = fitABCmodels("example/neutral.txt",
+    "neutral",
+    read_depth = 300,
+    resultsdirectory = "example/",
+    nparticles = 100,
+    maxiterations = 4*10^4,
+    maxclones = 1,
+    save = true,
+    adaptpriors = true,
+    verbose = true,
+    Nmaxinf = 10^6,
+    fmin = 0.01)
 ```
 
 This may take ~30-60 minutes on a desktop computer. With this output we can then plot the distributions to see if we get the right answers. First we'll plot the model posterior probabilities, we would hope to see model 0 (0 subclones) with the highest probability which is exactly what we see.
@@ -99,18 +100,19 @@ For this second example  we'll take some synthetic data ("oneclone.txt") generat
 As before we'll use ```fitABCmodels``` to attempt to recover these parameters as well as the correct number of subclones (1).
 
 ```julia
-out = fitABCmodels("example/oneclone.txt", # text file with data
-  "oneclone", # sample name
+srand(123)
+@time out1 = fitABCmodels("example/oneclone.txt",
+  "oneclone",
   read_depth = 300,
-  resultsdirectory = "", #use this directory
+  resultsdirectory = "example/",
   nparticles = 100,
-  maxiterations = 2 * 10^5,
-  Nmax = 10^3,
+  maxiterations = 4*10^4,
   maxclones = 2,
   save = true,
-  firstpass = false,
+  adaptpriors = true,
   verbose = true,
-  Nmaxinf = 10^6);
+  Nmaxinf = 10^6,
+  fmin = 0.01);
 ```
 
 As in the neutral example we can confirm we recover the input number of subclones and parameters by plotting the posterior distribution.
@@ -133,21 +135,21 @@ plotparameterposterior(out, 1)
 This is an example from data we presented in the paper in figure 3C, for this sample we found evidence for one subclone. We measured the overdispersion parameter of this data to be 0.005 which we can input into the inference algorithm. This data has also been corrected for the purity of the sample so we constrain this in our inference (it is still adviseable to give this a bit of freedom, hence we set the lower limit to 0.95). We also notice the mode of the lower peak ~ 0.04 so we set minvaf to this number.
 
 ```julia
-out = fitABCmodels("example/4990-12.txt",
-         "4990-12",
-         read_depth = 150,
-         resultsdirectory = "example/",
-         nparticles = 100,
-         maxiterations = 5*10^4,
-         maxclones = 1,
-         ρ = 0.005, #overdispersion parameter
-         save = true,
-         adaptpriors = true,
-         verbose = true,
-         Nmaxinf = 10^10,
-         minvaf = 0.04,
-         mincellularity = 0.95,
-         fmin = 0.04);
+srand(123)
+@time out = fitABCmodels("example/4990-12/data/4990-12.txt",
+  "4990-12",
+  read_depth = 150,
+  resultsdirectory = "example/",
+  nparticles = 100,
+  maxiterations = 4*10^4,
+  maxclones = 2,
+  ρ = 0.005, #measured overdispersion using clonal peak
+  save = true,
+  adaptpriors = true,
+  verbose = true,
+  Nmaxinf = 10^10,
+  minvaf = 0.04, #minimum vaf to resolve mutations, can be seen from lower peak
+  mincellularity = 0.95);
 ```
 
 First we can see that our model can accurately fit the data.
@@ -169,7 +171,7 @@ plotparameterposterior(out, 1)
 ![plot](/example/4990-12/plots/4990-12-posterior-1clone.png)
 
 ### Notes
-We note that in these examples above we have used a limited number of particles and a limited number of iterations to what would normally be recommended and what was used in the paper, we used these examples as it should be feasible to run them on a laptop in <30 minutes or so and as should be apparent the results are relatively good. Nonetheless in general we would recommend running the algorithm with 500 particles/samples and for a minimum of 10^6 iterations which is computationally expensive and hence is best suited to a HPC of some sort. Note that the inferences improve with increasing the number of iterations as the error between the target data set and the simulated datasets decreases. This is particularly relevant when considering up to 2 subclones (here the search space is large) and a large number of iterations is required to correctly identify samples with 2 subclones and their corresponding parameters.
+We note that in these examples above we have used a limited number of particles and a limited number of iterations to what would normally be recommended and what was used in the paper, we used these examples as it should be feasible to run them on a laptop in <30 minutes or so and as should be apparent the results are reasonably good. Nonetheless in general we would recommend running the algorithm with 500 particles/samples and for a minimum of 10^6 iterations which is computationally expensive and hence is best suited to a HPC of some sort. Note that the inferences improves with increasing the number of iterations as the error between the target data set and the simulated datasets decreases. This is particularly relevant when considering up to 2 subclones (here the search space is large) and a large number of iterations is required to correctly identify samples with 2 subclones and their corresponding parameters.
 
 Also note that the reported mutation rate is the effective mutation rate per tumour doubling. If you want to convert this to a quantity in terms of the per bp per tumour doubling you'll need to divide this number by the size of the target that was sequenced (eg ~ 30*10^6 for WXS).
 

@@ -36,7 +36,7 @@ function plotmodelposterior(res)
     DF = DataFrame(Model = map(x -> "$x", res.ModelProb[:Model]), Probability = res.ModelProb[:Probability])
 
     Plots.bar(DF[:Model], DF[:Probability],
-    title="Model Probabilities", yaxis = ("Probability"), xaxis = ("# Number of subclones"),
+    title="Model Probabilities", yaxis = ("Probability"), xaxis = ("Number of subclones"),
     linecolor = :white, fillcolor = RGBA(0.5, 0.5, 0.5, 0.8),
     markerstrokecolor=:white, titlefont = font(14, "Calibri"), ytickfont = font(12, "Calibri"), xtickfont = font(12, "Calibri"), legend = false, grid = false)
 end
