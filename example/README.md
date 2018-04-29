@@ -44,7 +44,6 @@ For the first example we'll take some synthetic data ("neutral.txt") generated f
 First we'll load the packages that we need.
 ```julia
 using SubClonalSelection
-using Gadfly
 using DataFrames
 ```
 We'll now use ```fitABCmodels``` from ```SubClonalSelection``` to attempt to recover these parameters as well as the number of subclones.
@@ -57,7 +56,7 @@ out = fitABCmodels("example/neutral.txt",
     resultsdirectory = "example/",
     nparticles = 100,
     maxiterations = 4*10^4,
-    maxclones = 1,
+    maxclones = 1, #only identify 0 or 1 subclones
     save = true,
     adaptpriors = true,
     verbose = true,
@@ -149,7 +148,7 @@ srand(123)
   verbose = true,
   Nmaxinf = 10^10,
   minvaf = 0.04, #minimum vaf to resolve mutations, can be seen from lower peak
-  mincellularity = 0.95);
+  mincellularity = 0.95); # we have corrected for cellularity already using estimates from sequenza. Nonetheless we would recommend not setting this to 1.0 and giving the inference some freedom here.
 ```
 
 First we can see that our model can accurately fit the data.

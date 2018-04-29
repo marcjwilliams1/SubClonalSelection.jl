@@ -1,5 +1,5 @@
-function plothistogram(res, model = 0; removelowfrequencies = true)
-
+function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend = pyplot)
+  plotsbackend()
   if removelowfrequencies == true
       dl = res.ABCsetup.Models[1].constants[8]
   else
@@ -28,11 +28,21 @@ function plothistogram(res, model = 0; removelowfrequencies = true)
                fillcolor = postcolor, linecolor = false,
                markerstrokecolor=:white, titlefont = font(12, "Calibri"), ytickfont = font(10, "Calibri"), xtickfont = font(10, "Calibri"), legend = false, grid = false,
                yaxis = ("Counts"), xaxis = ("VAF"))
+  if model == 2
+      xint = median(res.Posterior[model].Parameters[:freq], Weights(res.Posterior[model].Parameters[:weight]))/2
+      vline!([xint], line=(2,:dash,0.6,:black))
+  end
+
+  if model == 3
+      xint1 = median(res.Posterior[model].Parameters[:freq1], Weights(res.Posterior[model].Parameters[:weight]))/2
+      xint2 = median(res.Posterior[model].Parameters[:freq2], Weights(res.Posterior[model].Parameters[:weight]))/2
+      vline!([xint1, xint2], line=(2,:dash,0.6,[:black, :black]))
+  end
 
 end
 
-function plotmodelposterior(res)
-
+function plotmodelposterior(res; plotsbackend = pyplot)
+    plotsbackend()
     DF = DataFrame(Model = map(x -> "$x", res.ModelProb[:Model]), Probability = res.ModelProb[:Probability])
 
     Plots.bar(DF[:Model], DF[:Probability],
@@ -41,8 +51,8 @@ function plotmodelposterior(res)
     markerstrokecolor=:white, titlefont = font(14, "Calibri"), ytickfont = font(12, "Calibri"), xtickfont = font(12, "Calibri"), legend = false, grid = false)
 end
 
-function plotparameterposterior(res, model = 1)
-
+function plotparameterposterior(res, model = 1; plotsbackend = pyplot)
+    plotsbackend()
     if model == 0
         model = model + 1
         Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:3], nbins = 20, layout = 3, weights = Array(res.Posterior[model].Parameters[:weight]),
@@ -75,23 +85,24 @@ Create and save all plots. For each model, the VAF histogram with model results 
 ## Arguments
 - `resultsdirectory = "output"`: Directory to save the plots.
 - `outputformat = ".pdf"`: Format to save the plots as. Default is pdf, other common formats are available such png etc.
+- `plotsbackend = Plots.pyplot`: Backend to use for plotting in Plots.jl
 ...
 """
-function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf")
-
+function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf", plotsbackend = Plots.pyplot)
+  plotsbackend()
   sname = res.SampleName
   dir = joinpath(resultsdirectory, res.SampleName)
   makedirectory(resultsdirectory)
   makeplotsdirectories(dir)
-  p = plotmodelposterior(res)
+  p = plotmodelposterior(res, plotsbackend = plotsbackend)
   savefig(joinpath(dir, "plots", "$(sname)-modelposterior$(outputformat)"))
 
   model = 0
   for post in res.Posterior
     if post.Probability > 0.0
-      p = plothistogram(res, model)
+      p = plothistogram(res, model, plotsbackend = plotsbackend)
       savefig(joinpath(dir, "plots", "$(sname)-histogram-$(model)clone$(outputformat)"))
-      p = plotparameterposterior(res, model);
+      p = plotparameterposterior(res, model, plotsbackend = plotsbackend);
       savefig(joinpath(dir, "plots", "$(sname)-posterior-$(model)clone$(outputformat)"))
     end
     model = model + 1
