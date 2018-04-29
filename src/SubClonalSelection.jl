@@ -10,7 +10,6 @@ using GLM
 using Colors
 using StatsBase
 using Plots
-using PyPlot
 
 import Base.show, ApproxBayes.show
 

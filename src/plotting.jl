@@ -1,5 +1,7 @@
-function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend = pyplot)
-  plotsbackend()
+function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend = nothing)
+  if plotsbackend != nothing
+      plotsbackend()
+  end
   if removelowfrequencies == true
       dl = res.ABCsetup.Models[1].constants[8]
   else
@@ -41,8 +43,10 @@ function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend
 
 end
 
-function plotmodelposterior(res; plotsbackend = pyplot)
-    plotsbackend()
+function plotmodelposterior(res; plotsbackend = nothing)
+    if plotsbackend != nothing
+        plotsbackend()
+    end
     DF = DataFrame(Model = map(x -> "$x", res.ModelProb[:Model]), Probability = res.ModelProb[:Probability])
 
     Plots.bar(DF[:Model], DF[:Probability],
@@ -51,8 +55,10 @@ function plotmodelposterior(res; plotsbackend = pyplot)
     markerstrokecolor=:white, titlefont = font(14, "Calibri"), ytickfont = font(12, "Calibri"), xtickfont = font(12, "Calibri"), legend = false, grid = false)
 end
 
-function plotparameterposterior(res, model = 1; plotsbackend = pyplot)
-    plotsbackend()
+function plotparameterposterior(res, model = 1; plotsbackend = nothing)
+    if plotsbackend != nothing
+        plotsbackend()
+    end
     if model == 0
         model = model + 1
         Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:3], nbins = 20, layout = 3, weights = Array(res.Posterior[model].Parameters[:weight]),
@@ -85,11 +91,13 @@ Create and save all plots. For each model, the VAF histogram with model results 
 ## Arguments
 - `resultsdirectory = "output"`: Directory to save the plots.
 - `outputformat = ".pdf"`: Format to save the plots as. Default is pdf, other common formats are available such png etc.
-- `plotsbackend = Plots.pyplot`: Backend to use for plotting in Plots.jl
+- `plotsbackend = nothing`: Backend to use for plotting in Plots.jl
 ...
 """
-function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf", plotsbackend = Plots.pyplot)
-  plotsbackend()
+function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf", plotsbackend = nothing)
+    if plotsbackend != nothing
+        plotsbackend()
+    end
   sname = res.SampleName
   dir = joinpath(resultsdirectory, res.SampleName)
   makedirectory(resultsdirectory)
