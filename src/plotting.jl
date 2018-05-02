@@ -3,9 +3,9 @@ function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend
       plotsbackend()
   end
   if removelowfrequencies == true
-      dl = res.ABCsetup.Models[1].constants[8]
+      fmin = res.ABCsetup.Models[1].constants[9]
   else
-      dl = 0.0
+      fmin = 0.0
   end
 
   model = model + 1
@@ -14,7 +14,7 @@ function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend
   DFres[:VAF] = collect(0.01:0.01:1.0)
   DF = DataFrame(VAF = res.VAF)
   DFres = DFres[1:75, :]
-  DFres = DFres[DFres[:VAF].>=dl, :]
+  DFres = DFres[DFres[:VAF].>=fmin, :]
 
   if model - 1 == 0
       postcolor = RGBA(0.0, 76/255, 153/255) # plot neutral in blue and selection in red as in paper
@@ -28,7 +28,7 @@ function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend
   plot!(DFres[:VAF], DFres[:upperq95], fillrange = DFres[:lowerq95],
                fillalpha = 0.5,
                fillcolor = postcolor, linecolor = false,
-               markerstrokecolor=:white, titlefont = font(12, "Calibri"), ytickfont = font(10, "Calibri"), xtickfont = font(10, "Calibri"), legend = false, grid = false,
+               markerstrokecolor=:white, titlefont = font(8, "Calibri"), ytickfont = font(6, "Calibri"), xtickfont = font(6, "Calibri"), legend = false, grid = false,
                yaxis = ("Counts"), xaxis = ("VAF"))
   if model == 2
       xint = median(res.Posterior[model].Parameters[:freq], Weights(res.Posterior[model].Parameters[:weight]))/2
@@ -52,7 +52,7 @@ function plotmodelposterior(res; plotsbackend = nothing)
     Plots.bar(DF[:Model], DF[:Probability],
     title="Model Probabilities", yaxis = ("Probability"), xaxis = ("Number of subclones"),
     linecolor = :white, fillcolor = RGBA(0.5, 0.5, 0.5, 0.8),
-    markerstrokecolor=:white, titlefont = font(14, "Calibri"), ytickfont = font(12, "Calibri"), xtickfont = font(12, "Calibri"), legend = false, grid = false)
+    markerstrokecolor=:white, titlefont = font(10, "Calibri"), ytickfont = font(8, "Calibri"), xtickfont = font(8, "Calibri"), legend = false, grid = false)
 end
 
 function plotparameterposterior(res, model = 1; plotsbackend = nothing)
@@ -64,21 +64,21 @@ function plotparameterposterior(res, model = 1; plotsbackend = nothing)
         Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:3], nbins = 20, layout = 3, weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "Cellularity"],
         linecolor = :white, fillcolor = RGBA(0.75, 0.3, 0.3),
-        markerstrokecolor=:white, titlefont = font(12, "Calibri"), ytickfont = font(10, "Calibri"), xtickfont = font(10, "Calibri"), legend = false)
+        markerstrokecolor=:white, titlefont = font(10, "Calibri"), ytickfont = font(6, "Calibri"), xtickfont = font(6, "Calibri"), legend = false)
     elseif model == 1
         model = model + 1
         Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:7],
         nbins = 20, layout = 7,weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "s" "t" "Cellularity" "Subclone frequency" "# Mutations in subclone"],
         linecolor = :white, fillcolor = RGBA(0.75, 0.3, 0.3),
-        markerstrokecolor=:white, titlefont = font(12, "Calibri"),
-        xtickfont = font(10, "Calibri"), ytickfont = font(10, "Calibri"), legend = false)
+        markerstrokecolor=:white, titlefont = font(10, "Calibri"),
+        xtickfont = font(6, "Calibri"), ytickfont = font(6, "Calibri"), legend = false)
     elseif model == 2
         model = model + 1
         Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:11],
         nbins = 20, layout = 11,weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "s1" "t1" "s2" "t2" "Cellularity" "Subclone 1 frequency" "Subclone 2 frequency" "# Mutations in \nsubclone 1" "# Mutations in subclone 2"],
-        linecolor = :white, titlefont = font(12, "Calibri"),xtickfont = font(10, "Calibri"), ytickfont = font(10, "Calibri"), fillcolor = RGBA(0.75, 0.3, 0.3), legend = false)
+        linecolor = :white, titlefont = font(8, "Calibri"),xtickfont = font(6, "Calibri"), ytickfont = font(6, "Calibri"), fillcolor = RGBA(0.75, 0.3, 0.3), legend = false)
     end
 
 end
