@@ -268,7 +268,6 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   #if a hard cutoff for minvaf is specified detectionlimit is changed also changes fmin in this case as its assumed all mutations < minvaf have been removed or shouldn't be used
   if minvaf > 0.0
     detectionlimit = minvaf
-    fmin = minvaf
   end
 
   targetdata, VAF = gettargetDF(data, fmin = fmin, fmax = fmax)
