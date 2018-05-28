@@ -242,7 +242,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 ...
 """
 function fitABCmodels(data::Array{Float64, 1}, sname::String;
-  read_depth = 200.0, minreads = 5, minvaf = 0.0, fmin = 0.01,
+  read_depth = 200.0, minreads = 5, minvaf = 0.0, fmin = 0.05,
   fmax = 0.75, maxiterations = 10^4, maxclones = 2,
   nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
   progress = true, verbose = false, save = false,
@@ -350,7 +350,7 @@ end
 If data is a string will read in file. File should be a 1 column text file with VAF values in the rows.
 """
 function fitABCmodels(data::String, sname::String;
-  read_depth = 200.0, minreads = 5, fmin = 0.01, minvaf = 0.0,
+  read_depth = 200.0, minreads = 5, fmin = 0.05, minvaf = 0.0,
   fmax = 0.75, maxiterations = 10^4, maxclones = 2,
   nparticles = 500, Nmax = 10^4, resultsdirectory::String = "output",
   progress = true, verbose = false, save = false,

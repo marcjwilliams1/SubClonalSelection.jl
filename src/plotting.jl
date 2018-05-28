@@ -14,6 +14,7 @@ function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend
   DFres[:VAF] = collect(0.01:0.01:1.0)
   DF = DataFrame(VAF = res.VAF)
   DFres = DFres[1:75, :]
+  DFreshist = deepcopy(DFres)
   DFres = DFres[DFres[:VAF].>=fmin, :]
 
   if model - 1 == 0
@@ -22,7 +23,7 @@ function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend
       postcolor = RGBA(0.75, 0.3, 0.3)
   end
 
-  bar(DFres[:VAF], DFres[:truecounts], linecolor = RGBA(0.431, 0.431, 0.431, 0.9),
+  bar(DFreshist[:VAF], DFreshist[:truecounts], linecolor = RGBA(0.431, 0.431, 0.431, 0.9),
   fillcolor = RGBA(0.431, 0.431, 0.431, 0.9))
   plot!(DFres[:VAF], DFres[:mean], color = postcolor, w = 2)
   plot!(DFres[:VAF], DFres[:upperq95], fillrange = DFres[:lowerq95],
