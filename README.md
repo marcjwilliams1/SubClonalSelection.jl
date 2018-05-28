@@ -45,27 +45,24 @@ Plot the posterior model probabilities.
 ```julia
 plotmodelposterior(out)
 ```
-![plot](https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior-1.png)
 <figure>
-    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior-1.png" alt="modpost" width="400px">
+    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior-1.png" alt="modpost" width="500px">
 </figure>
 
 Plot the histogram for model 2.
 ```julia
 plothistogram(out, 1)
 ```
-![plot](https://marcjwilliams1.github.io/images/ng2018/1cloneB.png)
 <figure>
-    <img src="https://marcjwilliams1.github.io/images/ng2018/1cloneB.png" alt="modpost" width="400px">
+    <img src="https://marcjwilliams1.github.io/images/ng2018/1cloneB.png" alt="modpost" width="500px">
 </figure>
 
 Plot the posterior parameter distribution for model 2.
 ```julia
 plotparameterposterior(out, 1)
 ```
-![plot](https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-posterior-1clone-1.png)
 <figure>
-    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-posterior-1clone-1.png" alt="modpost" width="400px">
+    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-posterior-1clone-1.png" alt="modpost" width="500px">
 </figure>
 
 Note the ground truth of the parameters in this case are:
