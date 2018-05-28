@@ -100,7 +100,7 @@ As before we'll use ```fitABCmodels``` to attempt to recover these parameters as
 
 ```julia
 srand(123)
-@time out1 = fitABCmodels("example/oneclone.txt",
+@time out = fitABCmodels("example/oneclone.txt",
   "oneclone",
   read_depth = 300,
   resultsdirectory = "example/",
@@ -148,6 +148,7 @@ srand(123)
   verbose = true,
   Nmaxinf = 10^10,
   minvaf = 0.04, #minimum vaf to resolve mutations, can be seen from lower peak
+  fmin = 0.04,
   mincellularity = 0.95); # we have corrected for cellularity already using estimates from sequenza. Nonetheless we would recommend not setting this to 1.0 and giving the inference some freedom here.
 ```
 
