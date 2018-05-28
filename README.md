@@ -46,6 +46,9 @@ Plot the posterior model probabilities.
 plotmodelposterior(out)
 ```
 ![plot](https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior-1.png)
+<figure>
+    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior-1.png" alt="modpost" width="50px">
+</figure>
 
 Plot the histogram for model 2.
 ```julia
