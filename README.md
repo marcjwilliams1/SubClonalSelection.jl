@@ -27,16 +27,17 @@ Running an analysis requires variant allele frequencies (VAFs) as measured in de
 ## Running an analysis
 The main function to perform an analysis is ```fitABCmodels```. This takes as its first argument either a vector of Floats or a string pointing to a text file with a vector of floats, which will be read in automatically. The second argument is the name of the sample you wish to analyse which will be used to write the data and plots to a file. There are then a number of keyword arguments set to reasonable defaults. More details of these arguments and their defaults can be found by typing ```?fitABCmodels``` in a Julia session.
 
-There is some example data generated from the simulation found in the examples directory. For example the following command will run the inference on the ```oneclone.txt``` data set with 200 posterior samples and 5*10^4 iterations given sequencing depth of sample is 150X:
+There is some example data generated from the simulation found in the examples directory. For example the following command will run the inference on the ```oneclone.txt``` data set with 500 posterior samples and 10^6 iterations given sequencing depth of sample is 300X:
 ```julia
 out = fitABCmodels("example/oneclone.txt",
   "oneclone",
-  read_depth = 150,
+  read_depth = 300,
   resultsdirectory = "example",
-  nparticles = 200,
-  maxiterations = 5*10^4);
+  Nmaxinf = 10^6,
+  save = true,
+  nparticles = 500);
 ```
-The above command should run in about 15 minutes on a reasonably specced computer. For robust inferences we would recommend using 500 particles and setting ```maxiterations``` to 10^6. This starts to get computationally expensive so running on a cluster would be recommended in most cases.
+Running this is quite computationally expensive, so running on a cluster would be recommended in most cases.
 
 Also included are a number of functions to summarize the output and plot the posterior. ```show(out)``` will print a summary of the posterior model and parameter probabilities. We can also plot the posterior distributions.
 
@@ -44,19 +45,19 @@ Plot the posterior model probabilities.
 ```julia
 plotmodelposterior(out)
 ```
-![plot](/example/oneclone/plots/oneclone-modelposterior.png)
+![plot](https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior-1.png)
 
 Plot the histogram for model 2.
 ```julia
 plothistogram(out, 1)
 ```
-![plot](/example/oneclone/plots/oneclone-histogram-1clone.png)
+![plot](https://marcjwilliams1.github.io/images/ng2018/1cloneB.png)
 
 Plot the posterior parameter distribution for model 2.
 ```julia
 plotparameterposterior(out, 1)
 ```
-![plot](/example/oneclone/plots/oneclone-posterior-1clone.png)
+![plot](https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-posterior-1clone-1.png)
 
 Note the ground truth of the parameters in this case are:
 

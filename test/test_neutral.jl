@@ -16,6 +16,7 @@ out = fitABCmodels("data/neutral.txt",
   maxclones = 1,
   firstpass = false,
   progress = true,
+  verbose = true,
   save = true);
 
 # check if we get the correct model

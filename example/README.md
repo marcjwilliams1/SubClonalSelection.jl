@@ -96,7 +96,7 @@ For this second example  we'll take some synthetic data ("oneclone.txt") generat
 - Time emerges (tumour doublings): 9.0
 - Read depth: 300X
 
-As before we'll use ```fitABCmodels``` to attempt to recover these parameters as well as the correct number of subclones (1).
+As before we'll use ```fitABCmodels``` to attempt to recover these parameters as well as the correct number of subclones (which is 1).
 
 ```julia
 srand(123)

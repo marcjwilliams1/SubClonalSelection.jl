@@ -1,26 +1,21 @@
 function gettargetDF(VAF; fmin = 0.05, fmax = 0.75)
-
   targetdataCDF = getCDF(VAF, 0.001, fmin = fmin, fmax = fmax)
-
   return targetdataCDF, VAF
 end
 
 function getmodel(abcres, model)
-
     indeces = map(x -> x.model, abcres.particles) .== model
     abcresnew = deepcopy(abcres)
     abcresnew.particles = abcresnew.particles[indeces]
     abcresnew.parameters = abcresnew.parameters[model]
     abcresnew.weights = abcresnew.weights[model]
-
     return abcresnew
 end
 
 function getCDF(VAF::Array, step_size::Float64; fmin = 0.05, fmax = 0.7)
-
+  #fast way to calculate CDF
   out = cumsum(fit(Histogram, VAF, fmax:-step_size:fmin,closed=:left).weights[1:end - 1])
   out = out - out[1]
-
   return out
 end
 
@@ -29,11 +24,10 @@ function tumourABCneutral(parameters, constants, targetdata)
     #and histogram values which can be used to plot the output
 
     cst = constants
-
     simdata = simulate(nclones = 0,
                 ploidy = cst[1],
                 read_depth = cst[2],
-                μ = parameters[1],
+                μ = parameters[1]/cst[1], #infer the per cell mutation rate not per genome
                 clonalmutations = round(parameters[2]),
                 d = cst[3],
                 b = cst[4],
@@ -55,14 +49,13 @@ end
 
 function tumourABCselection(parameters, constants, targetdata)
 
-    # we only consider
+    # we only consider the tumour to have a clone if it is observeable in the data, above frequency 5%.
 
     cst = constants
-
     simdata = simulate(nclones = 1,
                 ploidy = cst[1],
                 read_depth = cst[2],
-                μ = parameters[1],
+                μ = parameters[1]/cst[1],
                 clonalmutations = round(parameters[2]),
                 d = cst[3],
                 b = cst[4],
@@ -84,6 +77,7 @@ function tumourABCselection(parameters, constants, targetdata)
         out = [simdata.sampleddata.DF, simdata.output.subclonemutations[1], simdata.output.Ndivisions[1], simdata.output.clonefreq[1]]
     end
 
+    #return true if clone is between 0.05 and 0.95
     c = false
     if ((sum(simdata.output.clonefreq.<0.95).==1) & (sum(simdata.output.clonefreq.>0.05).==1))[1] == true
         c = true
@@ -94,14 +88,11 @@ end
 
 function tumourABCselection2(parameters, constants, targetdata)
 
-    # we only consider
-
     cst = constants
-
     simdata = simulate(nclones = 2,
                 ploidy = cst[1],
                 read_depth = cst[2],
-                μ = parameters[1],
+                μ = parameters[1]/cst[1],
                 clonalmutations = round(parameters[2]),
                 d = cst[3],
                 b = cst[4],
@@ -128,6 +119,7 @@ function tumourABCselection2(parameters, constants, targetdata)
         simdata.output.clonefreq[2]]
     end
 
+    #return true if clones are between 0.05 and 0.95
     c = false
     if ((sum(simdata.output.clonefreq.<0.95).==2) & (sum(simdata.output.clonefreq.>0.05).==2))[1] == true
         c = true
@@ -246,6 +238,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `b = log(2)`: Birth rate of the population. Default is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
 - `mincellularity = 0.1`: If some prior knowledge on cellularity is known this can be modifed
 - `maxcellularity = 1.1`: If some prior knowledge on cellularity is known this can be modifed. This is set to > 1.0 so that there is some flexibility in the inference.
+- `convergence = 0.07`: Convergence for ABC. If new population ϵ is within convergence % of previous population then ABC stops.
 ...
 """
 function fitABCmodels(data::Array{Float64, 1}, sname::String;
@@ -255,7 +248,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   progress = true, verbose = false, save = false,
   ϵ1 = 10^6, mincellularity = 0.1, maxcellularity = 1.1, firstpass = false,
   Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0,
-  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), maxmu = 500, maxclonalmutations = 5000)
+  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), maxmu = 500, maxclonalmutations = 5000, convergence = 0.07)
 
   #make output directories
   if save != false
@@ -327,7 +320,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   nparticles = nparticles,
   modelkern = 0.5,
   scalefactor = scalefactor,
-  convergence = 0.08,
+  convergence = convergence,
   ϵ1 = eps1,
   Nmax = Nmax,
   mincellularity = mincellularity,
@@ -363,7 +356,8 @@ function fitABCmodels(data::String, sname::String;
   progress = true, verbose = false, save = false,
   ϵ1 = 10^6, mincellularity = 0.1, firstpass = false,
   Nmaxinf = 10^10, scalefactor = 2, ρ = 0.0,
-  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2))
+  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2),
+  convergence = 0.07)
 
   VAF = readdlm(data)[:, 1]
 
@@ -376,5 +370,6 @@ function fitABCmodels(data::String, sname::String;
   ϵ1 = ϵ1, mincellularity = mincellularity,
   firstpass = firstpass, Nmaxinf = Nmaxinf,
   scalefactor = scalefactor, ρ = ρ, adaptpriors = adaptpriors,
-  timefunction = timefunction, ploidy = ploidy, d = d, b = b)
+  timefunction = timefunction, ploidy = ploidy, d = d, b = b,
+  convergence = convergence)
 end

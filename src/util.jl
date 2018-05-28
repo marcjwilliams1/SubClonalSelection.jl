@@ -43,7 +43,7 @@ function collectoutput1clone(abcres; Nmax = 10^10)
     s = s,
     t = t1,
     cellularity = abcres.parameters[:, 5],
-    freq = scfreq,
+    frequency = scfreq,
     scmuts = map(x -> Float64(x), scmuts),
     weight = weights)
 
@@ -97,6 +97,7 @@ function collectoutput2clone(abcres; Nmax = 10^10)
 
     indeces = .!(scfreq1 .> scfreq2)
 
+    #identify subclone 1 as the highest frequency subclone
     scfreq1, scfreq2 = swapvalues(scfreq1, scfreq2, indeces)
     scmuts1, scmuts2 = swapvalues(scmuts1, scmuts2, indeces)
     scdivs1, scdivs2 = swapvalues(scdivs1, scdivs2, indeces)
@@ -117,8 +118,8 @@ function collectoutput2clone(abcres; Nmax = 10^10)
     s2 = s2,
     t2 = t1b,
     cellularity = abcres.parameters[:, 7],
-    freq1 = scfreq1,
-    freq2 = scfreq2,
+    frequency1 = scfreq1,
+    frequency2 = scfreq2,
     scmuts1 = scmuts1,
     scmuts2 = scmuts2,
     weight = weights)
@@ -211,7 +212,6 @@ function averagehistogram(particles, model, VAF)
 end
 
 function saveresults(res::Results; resultsdirectory = "output")
-
   makedirectories(joinpath(resultsdirectory, res.SampleName))
   getresults(res.ABCresults, resultsdirectory, res.SampleName, res.VAF, save = true)
   return
@@ -309,10 +309,8 @@ function makedirectory(resultsdirectory)
 end
 
 function show(io::IO, res::Results)
-
   show(res.ABCresults)
 end
-
 
 function show(io::IO, ABCresults::ApproxBayes.ABCSMCmodelresults)
 

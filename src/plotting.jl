@@ -31,13 +31,19 @@ function plothistogram(res, model = 0; removelowfrequencies = true, plotsbackend
                markerstrokecolor=:white, titlefont = font(8, "Calibri"), ytickfont = font(6, "Calibri"), xtickfont = font(6, "Calibri"), legend = false, grid = false,
                yaxis = ("Counts"), xaxis = ("VAF"))
   if model == 2
-      xint = median(res.Posterior[model].Parameters[:freq], Weights(res.Posterior[model].Parameters[:weight]))/2
+      xint = median(res.Posterior[model].Parameters[:frequency], Weights(res.Posterior[model].Parameters[:weight])) *
+      median(res.Posterior[model].Parameters[:cellularity], Weights(res.Posterior[model].Parameters[:weight]))
+      xint = xint/2
       vline!([xint], line=(2,:dash,0.6,:black))
   end
 
   if model == 3
-      xint1 = median(res.Posterior[model].Parameters[:freq1], Weights(res.Posterior[model].Parameters[:weight]))/2
-      xint2 = median(res.Posterior[model].Parameters[:freq2], Weights(res.Posterior[model].Parameters[:weight]))/2
+      xint1 = median(res.Posterior[model].Parameters[:frequency1], Weights(res.Posterior[model].Parameters[:weight])) *
+      median(res.Posterior[model].Parameters[:cellularity], Weights(res.Posterior[model].Parameters[:weight]))
+      xint1 = xint1 / 2
+      xint2 = median(res.Posterior[model].Parameters[:frequency2], Weights(res.Posterior[model].Parameters[:weight])) *
+      median(res.Posterior[model].Parameters[:cellularity], Weights(res.Posterior[model].Parameters[:weight]))
+      xint12 = xint2 / 2
       vline!([xint1, xint2], line=(2,:dash,0.6,[:black, :black]))
   end
 
@@ -80,7 +86,6 @@ function plotparameterposterior(res, model = 1; plotsbackend = nothing)
         title=["Mutation rate" "# Clonal mutations" "s1" "t1" "s2" "t2" "Cellularity" "Subclone 1 frequency" "Subclone 2 frequency" "# Mutations in \nsubclone 1" "# Mutations in subclone 2"],
         linecolor = :white, titlefont = font(8, "Calibri"),xtickfont = font(6, "Calibri"), ytickfont = font(6, "Calibri"), fillcolor = RGBA(0.75, 0.3, 0.3), legend = false)
     end
-
 end
 
 """
