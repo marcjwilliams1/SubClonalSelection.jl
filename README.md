@@ -49,7 +49,7 @@ plotmodelposterior(out)
     <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior-1.png" alt="modpost" width="500px">
 </figure>
 
-Plot the histogram for model 2.
+Plot the histogram for model with 1 subclone (second argument is the number of subclones).
 ```julia
 plothistogram(out, 1)
 ```
@@ -57,7 +57,7 @@ plothistogram(out, 1)
     <img src="https://marcjwilliams1.github.io/images/ng2018/1cloneB.png" alt="modpost" width="500px">
 </figure>
 
-Plot the posterior parameter distribution for model 2.
+Plot the posterior parameter distribution for model with 1 subclone.
 ```julia
 plotparameterposterior(out, 1)
 ```

@@ -71,7 +71,7 @@ plotmodelposterior(out)
 ![plot](/example/neutral/plots/neutral-modelposterior.png)
 
 We can visually inspect how well this model fits the data by overlaying a summary (mean and 95% credible intervals) of the VAF data from simulations that were accepted on top of the target data set.
-Plot the histogram for model 2.
+Plot the histogram for the model with 0 subclones.
 ```julia
 plothistogram(out, 0) #0 specified to only plot data from simulations of model 0
 ```
@@ -121,7 +121,7 @@ plotmodelposterior(out)
 ![plot](/example/oneclone/plots/oneclone-modelposterior.png)
 
 ```julia
-plothistogram(out, 1) #1 specified to only plot data from simulations of model 0
+plothistogram(out, 1) #1 specified to only plot data from simulations with 1 subclone
 ```
 ![plot](/example/oneclone/plots/oneclone-histogram-1clone.png)
 
