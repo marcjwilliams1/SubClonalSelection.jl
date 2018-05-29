@@ -30,11 +30,11 @@ mu = out.Posterior[1].Parameters[:mu]
 clonalmutations = out.Posterior[1].Parameters[:clonalmutations]
 cellularity = out.Posterior[1].Parameters[:cellularity]
 
-println("\tChecking true parameters are within the 80% credible interval range...")
+println("\tChecking true parameters are within the 95% credible interval range...")
 # check if parameters are within 80% credible interval
-@test quantile(mu, 0.1) < 20.0 < quantile(mu, 0.9)
-@test quantile(clonalmutations, 0.1) < 200.0 < quantile(clonalmutations, 0.9)
-@test quantile(cellularity, 0.1) < 0.7 < quantile(cellularity, 0.9)
+@test quantile(mu, 0.025) < 20.0 < quantile(mu, 0.975)
+@test quantile(clonalmutations, 0.025) < 200.0 < quantile(clonalmutations, 0.975)
+@test quantile(cellularity, 0.025) < 0.7 < quantile(cellularity, 0.975)
 
 println("\tChecking plotting functions work and are saved...")
 saveallplots(out)

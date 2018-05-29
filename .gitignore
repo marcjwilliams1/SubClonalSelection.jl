@@ -5,6 +5,8 @@ oneclone-*/**
 /oneclone-*/**
 example/oneclone-*/
 oneclone-*.txt
+nikzainal.txt
+example/nikzainal.txt
 example/example.jl
 example/otherdata/*
 /example/otherdata/*
