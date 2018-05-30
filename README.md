@@ -41,11 +41,10 @@ out = fitABCmodels("example/oneclone.txt",
 ```
 Running this is quite computationally expensive, so running on a cluster would be recommended in most cases.
 
-Also included are a number of functions to summarize the output and plot the posterior. The output of the fitABCmodels function prints a summary of the posterior distribution as well as some details on the ABC convergence. For example for the above we would print see a print out of the following
-```julia
+Also included are a number of functions to summarize the output and plot the posterior. The output of the fitABCmodels function prints a summary of the posterior distribution as well as some details on the ABC convergence. For example for the above we can see a print out of the model fitting results:
+```
 out
-```
-```
+
 Total number of simulations: 5.31e+05
 Cumulative number of simulations = [400, 1501, 3347, 6755, 11325, 17583, 25144, 43005, 94935, 225243, 531167]
 Acceptance ratio: 7.53e-04
@@ -91,7 +90,7 @@ Plot the posterior model probabilities.
 plotmodelposterior(out)
 ```
 <figure>
-    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior-1.png" alt="modpost" width="500px">
+    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-modelposterior.png" alt="modpost" width="500px">
 </figure>
 
 Plot the histogram for model with 1 subclone (second argument is the number of subclones).
@@ -107,7 +106,7 @@ Plot the posterior parameter distribution for model with 1 subclone.
 plotparameterposterior(out, 1)
 ```
 <figure>
-    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-posterior-1clone-1.png" alt="modpost" width="500px">
+    <img src="https://marcjwilliams1.github.io/files/oneclone/plots/onecloneC-posterior-1clone.png" alt="modpost" width="500px">
 </figure>
 
 Note the ground truth of the parameters in this case are. And as can be seen we do a reasonably good job of recovering the parameters. All ground truth parameters are within the 95% credible intervals.
@@ -123,7 +122,7 @@ Note the ground truth of the parameters in this case are. And as can be seen we 
 - Time emerges (tumour doublings): 9.0
 - Read depth: 300X
 
-Finally we can also save all plots and text files with posterior distributions to a directory, unless specified the default will be to create a file a directory called ```output``` in the current working directory. It is also possible to automatically save the output by adding a `save=true` keywords to `fitABCmodels`.
+Finally we can also save all plots and text files with posterior distributions to a directory, unless specified the default will be to create a file a directory called ```output``` in the current working directory. It is also possible to automatically save the output by adding a ```save=true``` keywords to ```fitABCmodels```.
 
 ```julia
 saveresults(out; resultsdirectory = "example")
