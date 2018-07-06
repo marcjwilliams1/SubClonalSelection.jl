@@ -6,7 +6,7 @@ println()
 println("####################")
 println("Checking that inference on neutral simulated data with known input parameters returns ground truth...")
 srand(123)
-out = fitABCmodels("data/neutral.txt",
+@time out = fitABCmodels("data/neutral.txt",
   "neutral",
   read_depth = 150,
   minvaf = 0.05,

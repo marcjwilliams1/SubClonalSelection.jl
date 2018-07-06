@@ -6,7 +6,7 @@ println()
 println("####################")
 println("Checking inference on non-neutral simulated data with known input parameters returns ground truth...")
 srand(1)
-out = fitABCmodels("data/oneclone.txt",
+@time out = fitABCmodels("data/oneclone.txt",
   "oneclone",
   read_depth = 150,
   resultsdirectory = "output",

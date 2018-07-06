@@ -10,6 +10,7 @@ using GLM
 using Colors
 using StatsBase
 using Plots
+using ProgressMeter
 
 import Base.show, ApproxBayes.show
 
@@ -32,6 +33,7 @@ export
 include("types.jl")
 include("util.jl")
 include("plotting.jl")
+include("abcalgorithm.jl")
 include("runabc.jl")
 
 end # module

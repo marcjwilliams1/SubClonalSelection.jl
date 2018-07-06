@@ -306,7 +306,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     fmax = fmax,
     Nmaxinf = Nmaxinf
     )
-    abcres = ApproxBayes.runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
+    abcres = runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
     eps1 = abcres.ϵ[maximum([1, length(abcres.ϵ) - 1])]
     println("################################################")
     println("Now running inference with ϵ1 = $(eps1)")
@@ -335,7 +335,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   fmax = fmax,
   Nmaxinf = Nmaxinf
   )
-  abcres = ApproxBayes.runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
+  abcres = runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
 
   posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory), sname, VAF, save = save, Nmaxinf = Nmaxinf);
 
