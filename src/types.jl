@@ -1,10 +1,10 @@
-type Posterior
+mutable struct Posterior
   MeanHistogram::DataFrame
   Parameters::DataFrame
   Probability::Float64
 end
 
-type Results
+mutable struct Results
   ABCsetup
   ABCresults
   VAF::Array{Float64, 1}
