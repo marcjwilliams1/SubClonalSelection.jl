@@ -228,8 +228,8 @@ function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf 
     DFpost0 = collectoutput0clone(getmodel(abcres, 1))
     DFr = averagehistogram(abcres.particles, 1, VAF)
     if save == true
-      writetable(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone0.csv"), DFpost0)
-      writetable(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone0.csv"), DFr)
+      CSV.write(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone0.csv"), DFpost0)
+      CSV.write(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone0.csv"), DFr)
     end
     push!(posteriors, Posterior(DFr, DFpost0, abcres.modelprob[1]))
   else
@@ -240,8 +240,8 @@ function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf 
     DFpost1 = collectoutput1clone(getmodel(abcres, 2), Nmax = Nmaxinf)
     DFr = averagehistogram(abcres.particles, 2, VAF)
     if save == true
-      writetable(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone1.csv"), DFr)
-      writetable(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone1.csv"), DFpost1)
+      CSV.write(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone1.csv"), DFr)
+      CSV.write(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone1.csv"), DFpost1)
     end
     push!(posteriors, Posterior(DFr, DFpost1, abcres.modelprob[2]))
   else
@@ -252,8 +252,8 @@ function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf 
     DFpost2 = collectoutput2clone(getmodel(abcres, 3), Nmax = Nmaxinf)
     DFr = averagehistogram(abcres.particles, 3, VAF)
     if save == true
-      writetable(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone2.csv"), DFpost2)
-      writetable(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone2.csv"), DFr)
+      CSV.write(joinpath(resultsdirectory, "posterior", "$(sname)-parameters-clone2.csv"), DFpost2)
+      CSV.write(joinpath(resultsdirectory, "posterior", "$(sname)-histogram-clone2.csv"), DFr)
     end
     push!(posteriors, Posterior(DFr, DFpost2, abcres.modelprob[3]))
   else
@@ -264,7 +264,7 @@ function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf 
 
   DF = DataFrame(Model = map(x -> string(x),0:length(abcres.modelprob) - 1), Probability = abcres.modelprob)
   if save == true
-    writetable(joinpath(resultsdirectory, "posterior", "$(sname)-modelprobabilities.csv"), DF)
+    CSV.write(joinpath(resultsdirectory, "posterior", "$(sname)-modelprobabilities.csv"), DF)
   end
 
   return posteriors, DFmp

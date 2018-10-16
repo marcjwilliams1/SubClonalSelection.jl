@@ -11,6 +11,7 @@ using Colors
 using StatsBase
 using Plots
 using ProgressMeter
+using CSV
 
 import Base.show, ApproxBayes.show
 
