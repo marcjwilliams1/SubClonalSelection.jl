@@ -2,7 +2,7 @@ Mcdf(f,fmin,fmax) = (1.0./f - 1.0/fmax) ./ (1.0/fmin - 1.0/fmax)
 
 function selection(λ, f, tend, t1)
     #define the equation for selection as above
-    s = (λ .* t1 + log.(f ./ (1 - f))) ./ (λ .* (tend - t1))
+    s = (λ .* t1 + log.(f ./ (1 .- f))) ./ (λ .* (tend - t1))
     return s
 end
 
@@ -34,8 +34,8 @@ function collectoutput1clone(abcres; Nmax = 10^10)
     weights = abcres.weights
 
     # eulergamma/log(2) is stochastic correction see Durrett Branching Process Models of Cancer, needed for selection calculation
-    t1 = ((shuffle(scmuts) ./ mu) / (2 * log.(2))) - eulergamma/log.(2) #shuffle so that t1 posterior is not correlated
-    tend = (log.(Nmax .* (1 - scfreq)) / log.(2))
+    t1 = ((shuffle(scmuts) ./ mu) / (2 * log.(2))) .- MathConstants.eulergamma/log.(2) #shuffle so that t1 posterior is not correlated
+    tend = (log.(Nmax .* (1 .- scfreq)) / log.(2))
     s = selection(log.(2), scfreq, tend, t1)
 
     DF = DataFrame(mu = mu,
@@ -106,8 +106,8 @@ function collectoutput2clone(abcres; Nmax = 10^10)
 
     freqfactor = clonesize(scfreq1, scfreq2)
 
-    t1a = ((shuffle(scmuts1) ./ mu) / (2 * log.(2))) - eulergamma/log.(2)
-    t1b = ((shuffle(scmuts2) ./ mu) / (2 * log.(2))) - eulergamma/log.(2)
+    t1a = ((shuffle(scmuts1) ./ mu) / (2 * log.(2))) .- MathConstants.eulergamma/log.(2)
+    t1b = ((shuffle(scmuts2) ./ mu) / (2 * log.(2))) .- MathConstants.eulergamma/log.(2)
     tend = (log.(Nmax .* (freqfactor)) / log.(2))
     s1, s2 = selection2clone(log.(2), scfreq1, scfreq2, tend, t1a, t1b)
 

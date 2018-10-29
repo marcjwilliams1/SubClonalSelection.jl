@@ -5,7 +5,7 @@
 println()
 println("####################")
 println("Checking inference on non-neutral simulated data with known input parameters returns ground truth...")
-srand(1)
+Random.seed!(1)
 @time out = fitABCmodels("data/oneclone.txt",
   "oneclone",
   read_depth = 150,
@@ -21,7 +21,7 @@ srand(1)
 
 # check if we get the correct model
 println("\tTesting posterior model probability returns one clone as most probable model...")
-@test indmax(out.ModelProb[:Probability]) == 2
+@test argmax(out.ModelProb[:Probability]) == 2
 
 println("\tTesting 2 clone model did not die out...")
 @test out.ModelProb[:Probability][3] > 0.0

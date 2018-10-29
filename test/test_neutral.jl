@@ -5,7 +5,7 @@
 println()
 println("####################")
 println("Checking that inference on neutral simulated data with known input parameters returns ground truth...")
-srand(123)
+Random.seed!(123)
 @time out = fitABCmodels("data/neutral.txt",
   "neutral",
   read_depth = 150,
@@ -23,7 +23,7 @@ srand(123)
 # check if we get the correct model
 println("")
 println("\tTesting posterior model probability returns neutral as most probable model...")
-@test indmax(out.ModelProb[:Probability]) == 1
+@test argmax(out.ModelProb[:Probability]) == 1
 
 # extract parameters
 mu = out.Posterior[1].Parameters[:mu]

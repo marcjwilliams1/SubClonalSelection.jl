@@ -1,6 +1,8 @@
 using SubClonalSelection
-using Base.Test
+using Test
 using Plots
+using Statistics
+using Random
 
 #useful to check what the backend is, seems to cause some problems
 println(backend())

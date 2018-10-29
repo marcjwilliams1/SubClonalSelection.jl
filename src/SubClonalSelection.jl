@@ -12,6 +12,9 @@ using StatsBase
 using Plots
 using ProgressMeter
 using CSV
+using Statistics
+using DelimitedFiles
+using Printf
 
 import Base.show, ApproxBayes.show
 
