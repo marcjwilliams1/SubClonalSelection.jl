@@ -68,13 +68,13 @@ function plotparameterposterior(res, model = 1; plotsbackend = nothing)
     end
     if model == 0
         model = model + 1
-        Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:3], nbins = 20, layout = 3, weights = Array(res.Posterior[model].Parameters[:weight]),
+        Plots.histogram(Matrix(res.Posterior[model].Parameters)[:, 1:3], nbins = 20, layout = 3, weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "Cellularity"],
         linecolor = :white, fillcolor = RGBA(0.75, 0.3, 0.3),
         markerstrokecolor=:white, titlefont = font(10, "Calibri"), ytickfont = font(6, "Calibri"), xtickfont = font(6, "Calibri"), legend = false)
     elseif model == 1
         model = model + 1
-        Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:7],
+        Plots.histogram(Matrix(res.Posterior[model].Parameters)[:, 1:7],
         nbins = 20, layout = 7,weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "s" "t" "Cellularity" "Subclone frequency" "# Mutations in subclone"],
         linecolor = :white, fillcolor = RGBA(0.75, 0.3, 0.3),
@@ -82,7 +82,7 @@ function plotparameterposterior(res, model = 1; plotsbackend = nothing)
         xtickfont = font(6, "Calibri"), ytickfont = font(6, "Calibri"), legend = false)
     elseif model == 2
         model = model + 1
-        Plots.histogram(Array(res.Posterior[model].Parameters)[:, 1:11],
+        Plots.histogram(Matrix(res.Posterior[model].Parameters)[:, 1:11],
         nbins = 20, layout = 11,weights = Array(res.Posterior[model].Parameters[:weight]),
         title=["Mutation rate" "# Clonal mutations" "s1" "t1" "s2" "t2" "Cellularity" "Subclone 1 frequency" "Subclone 2 frequency" "# Mutations in \nsubclone 1" "# Mutations in subclone 2"],
         linecolor = :white, titlefont = font(8, "Calibri"),xtickfont = font(6, "Calibri"), ytickfont = font(6, "Calibri"), fillcolor = RGBA(0.75, 0.3, 0.3), legend = false)
@@ -100,14 +100,19 @@ Create and save all plots. For each model, the VAF histogram with model results 
 - `plotsbackend = nothing`: Backend to use for plotting in Plots.jl
 ...
 """
-function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf", plotsbackend = nothing)
+function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf", plotsbackend = nothing, savepopulations = false, popnum = 1)
     if plotsbackend != nothing
         plotsbackend()
     end
   sname = res.SampleName
-  dir = joinpath(resultsdirectory, res.SampleName)
-  makedirectory(resultsdirectory)
-  makeplotsdirectories(dir)
+  if savepopulations
+      dir = joinpath(resultsdirectory, res.SampleName, "populations", "population_$popnum")
+      makeplotsdirectories(dir)
+  else
+      dir = joinpath(resultsdirectory, res.SampleName, "finalpopulation")
+      makedirectory(resultsdirectory)
+      makeplotsdirectories(dir)
+  end
   p = plotmodelposterior(res, plotsbackend = plotsbackend)
   savefig(joinpath(dir, "plots", "$(sname)-modelposterior$(outputformat)"))
 

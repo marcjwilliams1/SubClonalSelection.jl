@@ -3,7 +3,7 @@ function runabcCancer(ABCsetup::ABCRejectionModel, targetdata; progress = false)
   ABCsetup.nmodels > 1 || error("Only 1 model specified, use ABCRejection method to estimate parameters for a single model")
 
   #initalize array of particles
-  particles = Array{ApproxBayes.ParticleRejectionModel}(ABCsetup.Models[1].nparticles)
+  particles = Array{ApproxBayes.ParticleRejectionModel}(undef, ABCsetup.Models[1].nparticles)
 
   i = 1 #set particle indicator to 1
   its = 0 #keep track of number of iterations
@@ -46,14 +46,12 @@ function runabcCancer(ABCsetup::ABCRejectionModel, targetdata; progress = false)
   return out
 end
 
-function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progress = false)
-
-    println("running")
+function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progress = false, savepopulations = false, resultsdirectory = "", Nmaxinf = 10^10, sname = "cancerabc", VAF = [])
 
   ABCsetup.nmodels > 1 || error("Only 1 model specified, use ABCSMC method to estimate parameters for a single model")
 
   #run first population with parameters sampled from prior
-  if verbose == true
+  if verbose
     println("##################################################")
     println("Use ABC rejection to get first population")
   end
@@ -71,38 +69,39 @@ function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progre
   ϵ = quantile(ABCrejresults.dist, ABCsetup.α) # set new ϵ to αth quantile
   ϵvec = [ϵ] #store epsilon values
   numsims = [ABCrejresults.numsims] #keep track of number of simualtions
-  particles = Array{ApproxBayes.ParticleSMCModel}(ABCsetup.nparticles) #define particles array
+  particles = Array{ApproxBayes.ParticleSMCModel}(undef, ABCsetup.nparticles) #define particles array
   weights, modelprob = ApproxBayes.getparticleweights(oldparticles, ABCsetup)
+  ABCsetup = ApproxBayes.modelselection_kernel(ABCsetup, oldparticles)
 
   modelprob = ABCrejresults.modelfreq
 
-  if verbose == true
+  if verbose
     println("Run ABC SMC \n")
   end
 
   popnum = 1
   finalpop = false
 
-  if verbose == true
+  if verbose
     show(ApproxBayes.ABCSMCmodelresults(oldparticles, numsims, ABCsetup, ϵvec))
   end
 
   newparticle, dist, out, priorp = 0.0,0.0,0.0,0.0
 
   while (ϵ >= ABCsetup.ϵT) & (sum(numsims) <= ABCsetup.maxiterations)
-    if verbose == true
+    if verbose
       println("######################################## \n")
       println("########################################")
       println("Population number: $(popnum) \n")
     end
 
     i = 1 #set particle indicator to 1
-    particles = Array{ApproxBayes.ParticleSMCModel}(ABCsetup.nparticles)
+    particles = Array{ApproxBayes.ParticleSMCModel}(undef, ABCsetup.nparticles)
     distvec = zeros(Float64, ABCsetup.nparticles)
     its = 1
 
     if progress == true
-      p = Progress(ABCsetup.nparticles, 1, "ABC SMC population $(popnum), new ϵ: $(round(ϵ, 2))...", 30)
+      p = Progress(ABCsetup.nparticles, 1, "ABC SMC population $(popnum), new ϵ: $(round(ϵ, digits = 2))...", 30)
     end
     while i < ABCsetup.nparticles + 1
 
@@ -121,7 +120,7 @@ function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progre
         j = wsample(1:ABCsetup.nparticles, weights[mdoublestar, :])
         particletemp = oldparticles[j]
         #perturb particle
-        newparticle = ApproxBayes.perturbparticle(particletemp)
+        newparticle = ApproxBayes.perturbparticle(particletemp, ABCsetup.Models[mdoublestar].kernel)
         #calculate priorprob
         priorp = ApproxBayes.priorprob(newparticle.params, ABCsetup.Models[mdoublestar].prior)
 
@@ -154,8 +153,8 @@ function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progre
 
     particles, weights = ApproxBayes.smcweightsmodel(particles, oldparticles, ABCsetup, modelprob)
     weights, modelprob = ApproxBayes.getparticleweights(particles, ABCsetup)
-    particles = ApproxBayes.getscales(particles, ABCsetup)
     oldparticles = particles
+    ABCsetup = ApproxBayes.modelselection_kernel(ABCsetup, particles)
 
     if finalpop == true
       break
@@ -176,11 +175,22 @@ function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progre
     push!(numsims, its)
 
     if ((( abs(ϵvec[end - 1] - ϵ )) / ϵvec[end - 1]) < ABCsetup.convergence) == true
-      println("New ϵ is within $(round(ABCsetup.convergence * 100, 2))% of previous population, stop ABC SMC")
+      println("New ϵ is within $(round(ABCsetup.convergence * 100, digits = 2))% of previous population, stop ABC SMC")
       break
     end
+
+    if savepopulations == true
+        println()
+        println("Saving population $popnum data and plots\n")
+        abcres = ApproxBayes.ABCSMCmodelresults(particles, numsims, ABCsetup, ϵvec)
+        makedirectories(joinpath(resultsdirectory, sname, "populations", "population_$popnum"))
+        posteriors, DFmp = getresults(abcres, resultsdirectory, sname, VAF, save = true, Nmaxinf = Nmaxinf, savepopulations = savepopulations, popnum = popnum);
+        populationresults = Results(ABCsetup, abcres, VAF, posteriors, DFmp, sname)
+        saveallplots(populationresults; resultsdirectory = resultsdirectory, outputformat = ".pdf", savepopulations = savepopulations, popnum = popnum)
+    end
+
     popnum = popnum + 1
-    if verbose == true
+    if verbose
       show(ApproxBayes.ABCSMCmodelresults(oldparticles, numsims, ABCsetup, ϵvec))
     end
 
@@ -201,7 +211,7 @@ end
 function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = false)
 
   #run first population with parameters sampled from prior
-  if verbose == true
+  if verbose
     println("##################################################")
     println("Use ABC rejection to get first population")
   end
@@ -214,8 +224,9 @@ function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = 
   ϵvec = [ϵ] #store epsilon values
   numsims = [ABCrejresults.numsims] #keep track of number of simualtions
   particles = Array{ApproxBayes.ParticleSMC}(ABCsetup.nparticles) #define particles array
+  ABCsetup = ApproxBayes.modelselection_kernel(ABCsetup, oldparticles)
 
-  if verbose == true
+  if verbose
     println("Run ABC SMC \n")
   end
 
@@ -230,7 +241,7 @@ function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = 
     distvec = zeros(Float64, ABCsetup.nparticles)
     its = 1
     if progress == true
-      p = Progress(ABCsetup.nparticles, 1, "ABC SMC population $(popnum), new ϵ: $(round(ϵ, 2))...", 30)
+      p = Progress(ABCsetup.nparticles, 1, "ABC SMC population $(popnum), new ϵ: $(round(ϵ, digits = 2))...", 30)
     end
     while i < ABCsetup.nparticles + 1
 
@@ -238,7 +249,7 @@ function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = 
       while correctmodel == false
         j = wsample(1:ABCsetup.nparticles, weights)
         particle = oldparticles[j]
-        newparticle = ApproxBayes.perturbparticle(particle)
+        newparticle = ApproxBayes.perturbparticle(particle, ABCsetup.kernel)
         priorp = ApproxBayes.priorprob(newparticle.params, ABCsetup.prior)
         if priorp == 0.0 #return to beginning of loop if prior probability is 0
           break
@@ -268,8 +279,9 @@ function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = 
     end
 
     particles, weights = ApproxBayes.smcweights(particles, oldparticles, ABCsetup.prior)
-    particles = ApproxBayes.getscales(particles, ABCsetup)
     oldparticles = particles
+    ABCsetup = ApproxBayes.modelselection_kernel(ABCsetup, oldparticles)
+
 
     if finalpop == true
       break
@@ -290,8 +302,8 @@ function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = 
     push!(numsims, its)
 
     if ((( abs(ϵvec[end - 1] - ϵ )) / ϵvec[end - 1]) < ABCsetup.convergence) == true
-      if verbose == true
-        println("New ϵ is within $(round(ABCsetup.convergence * 100, 2))% of previous population, stop ABC SMC")
+      if verbose
+        println("New ϵ is within $(round(ABCsetup.convergence * 100, digits = 2))% of previous population, stop ABC SMC")
     end
       break
     end

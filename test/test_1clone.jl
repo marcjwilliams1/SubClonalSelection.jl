@@ -5,7 +5,7 @@
 println()
 println("####################")
 println("Checking inference on non-neutral simulated data with known input parameters returns ground truth...")
-srand(1)
+Random.seed!(1)
 @time out = fitABCmodels("data/oneclone.txt",
   "oneclone",
   read_depth = 150,
@@ -21,7 +21,7 @@ srand(1)
 
 # check if we get the correct model
 println("\tTesting posterior model probability returns one clone as most probable model...")
-@test indmax(out.ModelProb[:Probability]) == 2
+@test argmax(out.ModelProb[:Probability]) == 2
 
 println("\tTesting 2 clone model did not die out...")
 @test out.ModelProb[:Probability][3] > 0.0
@@ -39,8 +39,8 @@ println("\tChecking true parameters are within the 95% credible interval range..
 
 println("\tChecking plotting functions work and are saved...")
 saveallplots(out)
-@test isfile("output/oneclone/plots/oneclone-histogram-0clone.pdf")
-@test isfile("output/oneclone/posterior/oneclone-histogram-clone0.csv")
+@test isfile("output/oneclone/finalpopulation/plots/oneclone-histogram-0clone.pdf")
+@test isfile("output/oneclone/finalpopulation/posterior/oneclone-histogram-clone0.csv")
 rm("output", recursive = true)
 
 
