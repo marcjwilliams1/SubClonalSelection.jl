@@ -8,3 +8,5 @@ Plots
 ApproxBayes
 CSV
 CancerSeqSim
+StatsBase
+ProgressMeter

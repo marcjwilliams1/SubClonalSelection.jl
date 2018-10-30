@@ -150,7 +150,7 @@ function getsetup(maxclones; nparticles = 100, maxiterations = 10^4, convergence
      Uniform(priorcm...),
      Uniform(priorcellularity...)])
 
-  priort = [2.0, log(Nmax)/log(2) + (eulergamma / log(2))]
+  priort = [2.0, log(Nmax)/log(2) + (MathConstants.eulergamma / log(2))]
   maxsel = selection(log(2), 0.99, priort[2], priort[2] - 1)
   priorsel = [0.0, maxsel]
 
@@ -236,6 +236,7 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `mincellularity = 0.1`: If some prior knowledge on cellularity is known this can be modifed
 - `maxcellularity = 1.1`: If some prior knowledge on cellularity is known this can be modifed. This is set to > 1.0 so that there is some flexibility in the inference.
 - `convergence = 0.07`: Convergence for ABC. If new population ϵ is within convergence % of previous population then ABC stops.
+- `savepopulations = false`: Save results from intermediate populations.
 ...
 """
 function fitABCmodels(data::Array{Float64, 1}, sname::String;
@@ -245,12 +246,13 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   progress = true, verbose = false, save = false,
   ϵ1 = 10^6, mincellularity = 0.1, maxcellularity = 1.1, firstpass = false,
   Nmaxinf = 10^10, ρ = 0.0,
-  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2), maxmu = 500, maxclonalmutations = 5000, convergence = 0.07)
+  adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2),
+  maxmu = 500, maxclonalmutations = 5000, convergence = 0.07,
+  savepopulations = false)
 
   #make output directories
-  if save != false
-    makedirectory(resultsdirectory)
-    makedirectories(joinpath(resultsdirectory, sname))
+  if save
+    makedirectories(joinpath(resultsdirectory, sname, "finalpopulation"))
   end
   #sequencing error is 1%, otherwise detection limit is controlled by minimum number of reads to call a variant
   detectionlimit = maximum([0.01, minreads/read_depth])
@@ -263,7 +265,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   targetdata, VAF = gettargetDF(data, fmin = fmin, fmax = fmax)
   targetdataCDF = targetdata
   if save != false
-    writedlm(joinpath(joinpath(resultsdirectory, sname),
+    writedlm(joinpath(joinpath(resultsdirectory, sname, "finalpopulation"),
     "data", "$(sname).txt"), VAF)
   end
 
@@ -284,7 +286,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     println("Running first pass to get starting point for ABC")
     println("################################################")
     println("")
-    abcsetup = getsetup(1, detectionlimit = detectionlimit,
+    ABCsetup = getsetup(1, detectionlimit = detectionlimit,
     read_depth = read_depth,
     nparticles = 100,
     maxiterations = 3 * nparts,
@@ -302,7 +304,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     fmax = fmax,
     Nmaxinf = Nmaxinf
     )
-    abcres = runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
+    abcres = runabcCancer(ABCsetup, targetdataCDF, verbose = verbose, progress = progress);
     eps1 = abcres.ϵ[maximum([1, length(abcres.ϵ) - 1])]
     println("################################################")
     println("Now running inference with ϵ1 = $(eps1)")
@@ -310,7 +312,7 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
     println("")
   end
 
-  abcsetup = getsetup(maxclones, detectionlimit = dl,
+  ABCsetup = getsetup(maxclones, detectionlimit = dl,
   read_depth = read_depth,
   maxiterations = maxiterations,
   nparticles = nparticles,
@@ -330,11 +332,14 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   fmax = fmax,
   Nmaxinf = Nmaxinf
   )
-  abcres = runabcCancer(abcsetup, targetdataCDF, verbose = verbose, progress = progress);
 
-  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory), sname, VAF, save = save, Nmaxinf = Nmaxinf);
+  abcres = runabcCancer(ABCsetup, targetdataCDF, verbose = verbose,
+  progress = progress, Nmaxinf = Nmaxinf,
+  savepopulations = savepopulations, sname = sname, resultsdirectory = resultsdirectory, VAF = VAF);
 
-  finalresults = Results(abcsetup, abcres, VAF, posteriors, DFmp, sname);
+  posteriors, DFmp = getresults(abcres, joinpath(resultsdirectory), sname, VAF, save = save, Nmaxinf = Nmaxinf, savepopulations = false);
+
+  finalresults = Results(ABCsetup, abcres, VAF, posteriors, DFmp, sname);
 
   return finalresults
 end
@@ -352,7 +357,8 @@ function fitABCmodels(data::String, sname::String;
   ϵ1 = 10^6, mincellularity = 0.1, firstpass = false,
   Nmaxinf = 10^10, ρ = 0.0,
   adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2),
-  convergence = 0.07)
+  convergence = 0.07,
+  savepopulations = false)
 
   VAF = readdlm(data)[:, 1]
 
@@ -366,5 +372,6 @@ function fitABCmodels(data::String, sname::String;
   firstpass = firstpass, Nmaxinf = Nmaxinf,
   ρ = ρ, adaptpriors = adaptpriors,
   timefunction = timefunction, ploidy = ploidy, d = d, b = b,
-  convergence = convergence)
+  convergence = convergence,
+  savepopulations = savepopulations)
 end

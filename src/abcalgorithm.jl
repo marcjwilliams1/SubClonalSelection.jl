@@ -46,14 +46,12 @@ function runabcCancer(ABCsetup::ABCRejectionModel, targetdata; progress = false)
   return out
 end
 
-function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progress = false)
-
-    println("running")
+function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progress = false, savepopulations = false, resultsdirectory = "", Nmaxinf = 10^10, sname = "cancerabc", VAF = [])
 
   ABCsetup.nmodels > 1 || error("Only 1 model specified, use ABCSMC method to estimate parameters for a single model")
 
   #run first population with parameters sampled from prior
-  if verbose == true
+  if verbose
     println("##################################################")
     println("Use ABC rejection to get first population")
   end
@@ -77,21 +75,21 @@ function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progre
 
   modelprob = ABCrejresults.modelfreq
 
-  if verbose == true
+  if verbose
     println("Run ABC SMC \n")
   end
 
   popnum = 1
   finalpop = false
 
-  if verbose == true
+  if verbose
     show(ApproxBayes.ABCSMCmodelresults(oldparticles, numsims, ABCsetup, ϵvec))
   end
 
   newparticle, dist, out, priorp = 0.0,0.0,0.0,0.0
 
   while (ϵ >= ABCsetup.ϵT) & (sum(numsims) <= ABCsetup.maxiterations)
-    if verbose == true
+    if verbose
       println("######################################## \n")
       println("########################################")
       println("Population number: $(popnum) \n")
@@ -180,8 +178,19 @@ function runabcCancer(ABCsetup::ABCSMCModel, targetdata; verbose = false, progre
       println("New ϵ is within $(round(ABCsetup.convergence * 100, digits = 2))% of previous population, stop ABC SMC")
       break
     end
+
+    if savepopulations == true
+        println()
+        println("Saving population $popnum data and plots\n")
+        abcres = ApproxBayes.ABCSMCmodelresults(particles, numsims, ABCsetup, ϵvec)
+        makedirectories(joinpath(resultsdirectory, sname, "populations", "population_$popnum"))
+        posteriors, DFmp = getresults(abcres, resultsdirectory, sname, VAF, save = true, Nmaxinf = Nmaxinf, savepopulations = savepopulations, popnum = popnum);
+        populationresults = Results(ABCsetup, abcres, VAF, posteriors, DFmp, sname)
+        saveallplots(populationresults; resultsdirectory = resultsdirectory, outputformat = ".pdf", savepopulations = savepopulations, popnum = popnum)
+    end
+
     popnum = popnum + 1
-    if verbose == true
+    if verbose
       show(ApproxBayes.ABCSMCmodelresults(oldparticles, numsims, ABCsetup, ϵvec))
     end
 
@@ -202,7 +211,7 @@ end
 function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = false)
 
   #run first population with parameters sampled from prior
-  if verbose == true
+  if verbose
     println("##################################################")
     println("Use ABC rejection to get first population")
   end
@@ -217,7 +226,7 @@ function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = 
   particles = Array{ApproxBayes.ParticleSMC}(ABCsetup.nparticles) #define particles array
   ABCsetup = ApproxBayes.modelselection_kernel(ABCsetup, oldparticles)
 
-  if verbose == true
+  if verbose
     println("Run ABC SMC \n")
   end
 
@@ -293,7 +302,7 @@ function runabcCancer(ABCsetup::ABCSMC, targetdata; verbose = false, progress = 
     push!(numsims, its)
 
     if ((( abs(ϵvec[end - 1] - ϵ )) / ϵvec[end - 1]) < ABCsetup.convergence) == true
-      if verbose == true
+      if verbose
         println("New ϵ is within $(round(ABCsetup.convergence * 100, digits = 2))% of previous population, stop ABC SMC")
     end
       break

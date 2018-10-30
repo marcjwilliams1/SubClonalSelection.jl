@@ -212,14 +212,18 @@ function averagehistogram(particles, model, VAF)
 end
 
 function saveresults(res::Results; resultsdirectory = "output")
-  makedirectories(joinpath(resultsdirectory, res.SampleName))
+  makedirectories(joinpath(resultsdirectory, res.SampleName, "finalpopulation"))
   getresults(res.ABCresults, resultsdirectory, res.SampleName, res.VAF, save = true)
   return
 end
 
-function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf = 10^10)
+function getresults(abcres, resultsdirectory, sname, VAF; save = false, Nmaxinf = 10^10, savepopulations = false, popnum = 1)
 
-  resultsdirectory = joinpath(resultsdirectory, sname)
+  if savepopulations
+      resultsdirectory = joinpath(resultsdirectory, sname, "populations", "population_$popnum")
+  else
+      resultsdirectory = joinpath(resultsdirectory, sname, "finalpopulation")
+  end
   posteriors = Posterior[]
   #save model posterior
   DFmp = DataFrame(Model = map(x -> string(x),0:length(abcres.modelprob) - 1), Probability = abcres.modelprob)
@@ -273,38 +277,38 @@ end
 function makedirectories(resultsdirectory)
 
   if isdir(resultsdirectory) == false
-    mkdir(resultsdirectory)
+    mkpath(resultsdirectory)
   end
 
   if isdir(joinpath(resultsdirectory, "plots")) == false
-    mkdir(joinpath(resultsdirectory, "plots"))
+    mkpath(joinpath(resultsdirectory, "plots"))
   end
   if isdir(joinpath(resultsdirectory, "processed")) == false
-    mkdir(joinpath(resultsdirectory, "processed"))
+    mkpath(joinpath(resultsdirectory, "processed"))
   end
 
   if isdir(joinpath(resultsdirectory, "posterior")) == false
-    mkdir(joinpath(resultsdirectory, "posterior"))
+    mkpath(joinpath(resultsdirectory, "posterior"))
   end
 
   if isdir(joinpath(resultsdirectory, "data")) == false
-    mkdir(joinpath(resultsdirectory, "data"))
+    mkpath(joinpath(resultsdirectory, "data"))
   end
 
 end
 
 function makeplotsdirectories(resultsdirectory)
   if isdir(joinpath(resultsdirectory)) == false
-    mkdir(joinpath(resultsdirectory))
+    mkpath(joinpath(resultsdirectory))
   end
   if isdir(joinpath(resultsdirectory, "plots")) == false
-    mkdir(joinpath(resultsdirectory, "plots"))
+    mkpath(joinpath(resultsdirectory, "plots"))
   end
 end
 
 function makedirectory(resultsdirectory)
   if isdir(joinpath(resultsdirectory)) == false
-    mkdir(joinpath(resultsdirectory))
+    mkpath(joinpath(resultsdirectory))
   end
 end
 
@@ -319,7 +323,7 @@ function show(io::IO, ABCresults::ApproxBayes.ABCSMCmodelresults)
   @printf("Total number of simulations: %.2e\n", sum(ABCresults.numsims))
   println("Cumulative number of simulations = $(cumsum(ABCresults.numsims))")
   @printf("Acceptance ratio: %.2e\n\n", ABCresults.accratio)
-  println("Tolerance schedule = $(round.(ABCresults.ϵ, 2))\n")
+  println("Tolerance schedule = $(round.(ABCresults.ϵ, digits = 2))\n")
 
   print("Model probabilities:\n")
   for j in 1:length(ABCresults.modelprob)

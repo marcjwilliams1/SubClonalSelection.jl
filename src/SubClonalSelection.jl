@@ -15,6 +15,7 @@ using CSV
 using Statistics
 using DelimitedFiles
 using Printf
+using Random
 
 import Base.show, ApproxBayes.show
 

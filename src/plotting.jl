@@ -100,14 +100,19 @@ Create and save all plots. For each model, the VAF histogram with model results 
 - `plotsbackend = nothing`: Backend to use for plotting in Plots.jl
 ...
 """
-function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf", plotsbackend = nothing)
+function saveallplots(res; resultsdirectory = "output", outputformat = ".pdf", plotsbackend = nothing, savepopulations = false, popnum = 1)
     if plotsbackend != nothing
         plotsbackend()
     end
   sname = res.SampleName
-  dir = joinpath(resultsdirectory, res.SampleName)
-  makedirectory(resultsdirectory)
-  makeplotsdirectories(dir)
+  if savepopulations
+      dir = joinpath(resultsdirectory, res.SampleName, "populations", "population_$popnum")
+      makeplotsdirectories(dir)
+  else
+      dir = joinpath(resultsdirectory, res.SampleName, "finalpopulation")
+      makedirectory(resultsdirectory)
+      makeplotsdirectories(dir)
+  end
   p = plotmodelposterior(res, plotsbackend = plotsbackend)
   savefig(joinpath(dir, "plots", "$(sname)-modelposterior$(outputformat)"))
 
