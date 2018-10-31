@@ -225,11 +225,11 @@ Fit a stochastic model of cancer evolution to cancer sequencing data using Appro
 - `verbose = true`: Print out summary at each ABC population step.
 - `save = false `: Save output or not
 - `ϵ1 = 10^6 `: Target ϵ for first ABC step
-- `firstpass = false`: If set to true will run a limited first pass of the algorithm to determine a good starting ϵ1 if this unknown, otherwise ϵ1 is large
+- `firstpass = false`: If set to true will run a limited first pass of the algorithm to determine a good starting ϵ1 if this unknown, otherwise ϵ1 is effectively infinity.
 - `Nmaxinf = 10^10`: Scales selection coefficient value assuming the tumour size is Nmaxinf. Once value >10^9 has limited effect.
 - `ρ = 0.0`: Overdispersion parameter for beta-binomial model of sequencing data. ρ = 0.0 means model is binomial sampling
-- `adaptpriors = false`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set which provide an upper an lower limit, this is an experimental feature that needs further validation, although initial tests suggest it performs well and does not skew inferences
-- `timefunction = timefunc`: Function for KMC algorithm timestep. timefunc returns 1 meaning the timestep is the average of stochastic process. Alternatively timefuncrand can be specified which uses `-log(rand())` to increase the time step, so it is exponentially distributed rather than the mean of the exponential distribution.
+- `adaptpriors = true`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set which provide an upper an lower limit, this is an experimental feature that needs further validation, although initial tests suggest it performs well and does not skew inferences
+- `timefunction = timefunc`: Function for KMC algorithm timestep. timefunc returns 1 meaning the timestep is the average of stochastic process. Alternatively timefuncrand can be specified which uses `-log(rand())` to increase the time step, so it is exponentially distributed rather than the mean of the exponential distribution. We use population doublings as our unit of time so this does not change the method and is an algorithmic choice.
 - `ploidy = 2`: ploidy of the genome
 - `d = 0.0`: Death rate of the the host population in the tumour, it is the compound parameter μ/β (where β = (b-d)/b) that can be inferred from the VAF distribution hence setting d = 0.0 means there is one fewer parameter in the ABC and hence increases efficiency.
 - `b = log(2)`: Birth rate of the population. Default is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
