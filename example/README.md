@@ -7,6 +7,8 @@ First I'll go through some of the basics of the package and the options availabl
 ## `fitABCmodels` function
 An analysis is performed with the ```fitABCmodels``` function that takes as input either a vector of Floats or a string pointing to a text file containing a vector of floats. These values are the VAF values from a deep sequencing experiment. There are a number of parameters that can be modified in the ```fitABCmodels``` function, these are given below and can also be accessed with ```?fitABCmodels``` in a Julia session.
 
+### A note in input data
+The method does not take into account copy number variation in the genome, so data should be filtered for a single copy number state. For example, in general we only use mutation in heterozygous diploid states, however the approach in theory should work with with other ploidy state and there is an optional argument `ploidy` should you wish to use mutations in triploid or haploid regions for example. We would also only recommend applying this to data when there is a significant number of sub clonal mutations, we would recommend having at least 100 such mutations. Naturally, the more mutations you have the better your inferences will be.
 
 ### Function arguments
 - `read_depth = 200.0`: Mean read depth of the target data set
@@ -24,13 +26,16 @@ An analysis is performed with the ```fitABCmodels``` function that takes as inpu
 - `ϵ1 = 10^6 `: Target ϵ for first ABC step
 - `firstpass = false`: If set to true will run a limited first pass of the algorithm to determine a good starting ϵ1 if this unknown.
 - `Nmaxinf = 10^10`: Scales selection coefficient value assuming the tumour size is Nmaxinf. Once value >10^9 has limited effect.
-- `scalefactor = 2`: Parameter for perturbation kernel for parameter values. Larger values means space will be explored more slowly but fewer particles will be perturbed outside prior range.
 - `ρ = 0.0`: Overdispersion parameter for beta-binomial model of sequencing data. ρ = 0.0 means model is binomial sampling
-- `adaptpriors = false`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set. This is an experimental feature that needs further validation, although initial tests suggest it performs well and does not skew inferences. To run the inference with default priors as described in the paper keep this to false.
-- `timefunction = timefunc`: Function for KMC algorithm timestep. timefunc returns 1 meaning the timestep is the average of stochastic process. Alternatively timefuncrand can be specified which uses `-log(rand())` to increase the time step, so it is exponentially distributed rather than the mean of the exponential distribution.
+- `adaptpriors = true`: If true priors on μ and clonalmutations are adapted based on the number of mutations in the data set. This is an experimental feature that needs further validation, although initial tests suggest it performs well and does not skew inferences. To run the inference with default priors as described in the paper set this to false.
+- `timefunction = timefunc`: Function for KMC algorithm timestep. timefunc returns 1 meaning the timestep is the average of stochastic process. Alternatively timefuncrand can be specified which uses `-log(rand())` to increase the time step, so it is exponentially distributed rather than the mean of the exponential distribution. We use population doublings as our unit of time so this does not change the method and is an algorithmic choice.
 - `ploidy = 2`: ploidy of the genome
 - `d = 0.0`: Death rate of the host population in the tumour, we would advise keeping this to 0.0 as it is only μ/β that can be inferred. That is differences in the death rate are unidentifiable in this framework.
 - `b = log(2)`: Birth rate of the population. Default is set to `log(2)` so that tumour doubles with each unit increase in t in the absence of cell death.
+- `mincellularity = 0.1`: If some prior knowledge on cellularity is known this can be modifed
+- `maxcellularity = 1.1`: If some prior knowledge on cellularity is known this can be modifed. This is set to > 1.0 so that there is some flexibility in the inference.
+- `convergence = 0.07`: Convergence for ABC. If new population ϵ is within convergence % of previous population then ABC stops.
+- `savepopulations = false`: Save results from intermediate populations.
 
 ## Example 1 - Neutral synthetic data
 For the first example we'll take some synthetic data ("neutral.txt") generated from a neutral simulation of tumour evolution. The input parameters for the simulations were as follows:
@@ -49,7 +54,8 @@ using DataFrames
 We'll now use ```fitABCmodels``` from ```SubClonalSelection``` to attempt to recover these parameters as well as the number of subclones.
 
 ```julia
-srand(123)
+using Random
+Random.seed!(123)
 out = fitABCmodels("example/neutral.txt",
     "neutral",
     read_depth = 300,
@@ -99,7 +105,7 @@ For this second example  we'll take some synthetic data ("oneclone.txt") generat
 As before we'll use ```fitABCmodels``` to attempt to recover these parameters as well as the correct number of subclones (which is 1).
 
 ```julia
-srand(123)
+Random.seed!(123)
 @time out = fitABCmodels("example/oneclone.txt",
   "oneclone",
   read_depth = 300,
@@ -134,7 +140,7 @@ plotparameterposterior(out, 1)
 This is an example from data we presented in the paper in figure 3C, for this sample we found evidence for one subclone. We measured the overdispersion parameter of this data to be 0.005 which we can input into the inference algorithm. This data has also been corrected for the purity of the sample so we constrain this in our inference (it is still adviseable to give this a bit of freedom, hence we set the lower limit to 0.95). We also notice the mode of the lower peak ~ 0.04 so we set minvaf to this number.
 
 ```julia
-srand(123)
+Random.seed!(123)
 @time out = fitABCmodels("example/4990-12/data/4990-12.txt",
   "4990-12",
   read_depth = 150,
@@ -171,7 +177,7 @@ plotparameterposterior(out, 1)
 ![plot](/example/4990-12/plots/4990-12-posterior-1clone.png)
 
 ### Notes
-We note that in these examples above we have used a limited number of particles and a limited number of iterations to what would normally be recommended and what was used in the paper, we used these examples as it should be feasible to run them on a laptop in <30 minutes or so and as should be apparent the results are reasonably good, although you can see that the posterior distribution for the parameters are not particularly smooth, a larger number of iterations would result in smoother distribution. Nonetheless in general we would recommend running the algorithm with 500 particles/samples and for a minimum of 10^6 iterations which is computationally expensive and hence is best suited to a HPC of some sort. Note that the inferences improves with increasing the number of iterations as the error between the target data set and the simulated datasets decreases. This is particularly relevant when considering up to 2 subclones (here the search space is large) and a large number of iterations is required to correctly identify samples with 2 subclones and their corresponding parameters accurately.
+We note that in these examples above we have used a limited number of particles and a limited number of iterations to what would normally be recommended and what was used in the paper, we used these examples as it should be feasible to run them on a desktop computer in <30 minutes or so. And as should be apparent the results are reasonably good, although you can see that the posterior distribution for the parameters are not particularly smooth. A larger number of iterations would result in smoother distribution. Nonetheless in general we would recommend running the algorithm with 500 particles/samples and for a minimum of 10^6 iterations which is computationally expensive and hence is best suited to a HPC of some sort. Note that the inferences improves with increasing the number of iterations as the error between the target data set and the simulated datasets decreases. This is particularly relevant when considering up to 2 subclones (here the search space is large) and a large number of iterations is required to correctly identify samples with 2 subclones and their corresponding parameters accurately.
 
 Also note that the reported mutation rate is the effective mutation rate per tumour doubling. If you want to convert this to a quantity in terms of the per bp per tumour doubling you'll need to divide this number by the size of the target that was sequenced (eg ~ 30*10^6 for WXS).
 

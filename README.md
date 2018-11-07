@@ -30,7 +30,8 @@ The main function to perform an analysis is ```fitABCmodels```. This takes as it
 
 There is some example data generated from the simulation found in the examples directory. For example the following command will run the inference on the ```oneclone.txt``` data set with 400 posterior samples and 5*10^5 iterations given sequencing depth of sample is 300X:
 ```julia
-srand(123)
+using Random
+Random.seed!(123)
 out = fitABCmodels("example/oneclone.txt",
   "oneclone",
   read_depth = 300,
