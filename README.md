@@ -12,7 +12,7 @@ The package enables analysis as described in [Quantification of subclonal select
 ## Getting Started
 To download the package, once you're in a Julia session type the following command:
 ```julia
-Pkg.clone("https://github.com/marcjwilliams1/SubClonalSelection.jl")
+] add https://github.com/marcjwilliams1/SubClonalSelection.jl
 ```
 
 Then once you are in a julia session the package can be loaded with

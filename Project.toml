@@ -1,4 +1,4 @@
-name = "SubClonalSelection.jl"
+name = "SubClonalSelection"
 uuid = "f2909333-097e-5a7f-8594-6c06933f0447"
 
 [deps]
