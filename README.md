@@ -5,6 +5,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/marcjwilliams1/SubClonalSelection.jl/badge.svg?branch=master)](https://coveralls.io/github/marcjwilliams1/SubClonalSelection.jl?branch=master)
 [![codecov.io](http://codecov.io/github/marcjwilliams1/SubClonalSelection.jl/coverage.svg?branch=master)](http://codecov.io/github/marcjwilliams1/SubClonalSelection.jl?branch=master)
 
+
+### It is recommended that you use [*mobster*](https://github.com/caravagn/mobster) for this type of analysis moving forward. *mobster* is an R package that provides similar functionality with orders of magnitude increases in speed and has many other features. SubClonalSelection.jl will remain here but I am unlikely to actively develop the package or be able to provide much ongoing support.
+
 A Julia package for inferring the strength of selection from cancer sequencing data. Package simultaneously estimates the number of subclones in the population and their relative fitnesses. This is done by generating synthetic data by simulating different population dynamics (see [CancerSeqSim.jl](https://github.com/marcjwilliams1/CancerSeqSim.jl)) and fitting this to data using Approximate Bayesian Computation (see [ApproxBayes.jl](https://github.com/marcjwilliams1/ApproxBayes.jl)).
 
 The package enables analysis as described in [Quantification of subclonal selection in cancer from bulk sequencing data](https://www.nature.com/articles/s41588-018-0128-6). See this paper for the technical background.
