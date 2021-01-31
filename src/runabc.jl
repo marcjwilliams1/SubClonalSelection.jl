@@ -249,6 +249,8 @@ function fitABCmodels(data::Array{Float64, 1}, sname::String;
   adaptpriors = true, timefunction = timefunc, ploidy = 2, d = 0.0, b = log(2),
   maxmu = 500, maxclonalmutations = 5000, convergence = 0.07,
   savepopulations = false)
+  
+  println("It is recommended that you use mobster for this type of analysis moving forward. mobster is an R package that provides similar functionality with orders of magnitude increases in speed and has many other features. SubClonalSelection.jl will remain here but I am unlikely to actively develop the package or be able to provide much ongoing support.")
 
   #make output directories
   if save
